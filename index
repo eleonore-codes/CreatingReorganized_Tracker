@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>CreatingReorganized — Side-Hustle Hero's Journey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --blue:#1558A8;--blue-dk:#0B3D7A;--blue-md:#2A7DD4;--blue-lt:#EAF2FB;--blue-x:#D1E6F7;
+  --yel:#F5C416;--yel-dk:#C99E00;--yel-lt:#FFFBE6;--yel-md:#EAB800;
+  --surf:#FFFFFF;--bg:#F3F6FB;--bdr:#D5E2F0;--txt:#16243A;--mute:#5A6E88;
+  --green:#1B8A4A;--green-lt:#E5F7ED;--red:#C0392B;--red-lt:#FDECEA;
+  --purple:#5D3FD3;--purple-lt:#F0EBFF;
+  --r:12px;--r-sm:8px;--sh:0 2px 14px rgba(13,45,90,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;font-size:15px;}
+h2,h3{font-family:'Syne',sans-serif;}
+a{color:var(--blue);}a:hover{text-decoration:underline;}
+button,input,textarea,select{font-family:'DM Sans',sans-serif;cursor:pointer;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:3px;}
+
+/* ── HEADER ── */
+.hdr{background:var(--blue-dk);color:#fff;padding:.8rem 1.2rem;display:flex;align-items:center;
+  justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:0 2px 10px rgba(0,0,0,.28);}
+.cr-logo{background:var(--yel);color:var(--blue-dk);font-family:'Syne',sans-serif;font-weight:800;
+  font-size:10px;padding:3px 7px;border-radius:5px;letter-spacing:.6px;}
+.hdr-title{font-size:.93rem;font-weight:700;letter-spacing:.3px;display:flex;align-items:center;gap:8px;}
+.hdr-sub{font-size:.66rem;color:rgba(255,255,255,.5);margin-top:2px;}
+.hdr-right{display:flex;align-items:center;gap:.5rem;}
+.crbtn{background:var(--yel);color:var(--blue-dk);border:none;padding:.38rem .88rem;border-radius:7px;
+  font-size:.76rem;font-weight:700;transition:all .18s;letter-spacing:.3px;}
+.crbtn:hover{background:var(--yel-dk);color:#fff;}
+.settbtn{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.28);color:#fff;
+  padding:.38rem .75rem;border-radius:7px;font-size:.76rem;font-weight:600;transition:all .18s;}
+.settbtn:hover{background:rgba(255,255,255,.24);}
+
+/* ── TABS ── */
+.tabs{background:var(--blue-dk);display:flex;padding:0 .8rem;overflow-x:auto;
+  border-top:1px solid rgba(255,255,255,.08);}
+.tabs::-webkit-scrollbar{height:0;}
+.tab{padding:.55rem .9rem;font-size:.77rem;font-weight:600;color:rgba(255,255,255,.52);
+  cursor:pointer;border-bottom:3px solid transparent;transition:all .18s;white-space:nowrap;}
+.tab.active{color:#fff;border-bottom-color:var(--yel);}
+.tab:hover:not(.active){color:rgba(255,255,255,.82);}
+
+/* ── LAYOUT ── */
+.wrap{max-width:1080px;margin:0 auto;padding:1.2rem 1rem;}
+.panel{display:none;}.panel.active{display:block;}
+
+/* ── HERO ── */
+.hero{background:linear-gradient(135deg,var(--blue-dk) 0%,var(--blue) 100%);border-radius:var(--r);
+  padding:1.2rem;color:#fff;display:grid;grid-template-columns:auto 1fr auto;gap:1.1rem;
+  align-items:center;margin-bottom:1.1rem;}
+@media(max-width:540px){.hero{grid-template-columns:auto 1fr;}.lbadge{display:none;}}
+.av-wrap{display:flex;flex-direction:column;align-items:center;gap:.38rem;}
+.av-name{background:var(--yel);color:var(--blue-dk);font-weight:700;font-size:.66rem;
+  padding:2px 7px;border-radius:5px;text-align:center;letter-spacing:.3px;}
+.xp-lbl{font-size:.68rem;color:rgba(255,255,255,.6);display:flex;justify-content:space-between;margin-bottom:3px;}
+.xp-t{height:6px;background:rgba(255,255,255,.2);border-radius:3px;overflow:hidden;}
+.xp-f{height:100%;background:var(--yel);border-radius:3px;transition:width .5s ease;}
+.lbadge{background:var(--yel);color:var(--blue-dk);width:54px;height:54px;border-radius:50%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;}
+.lbadge .n{font-family:'Syne',sans-serif;font-size:1.45rem;font-weight:800;line-height:1;}
+.lbadge .t{font-size:.5rem;font-weight:700;letter-spacing:.5px;}
+
+/* ── MENTOR ── */
+.mentor{background:var(--yel-lt);border:1.5px solid var(--yel-md);border-radius:var(--r);
+  padding:.9rem 1.1rem;margin-bottom:1.1rem;display:flex;gap:.85rem;align-items:flex-start;}
+.m-av{width:40px;height:40px;flex-shrink:0;border-radius:50%;background:var(--blue-dk);
+  display:flex;align-items:center;justify-content:center;color:#fff;
+  font-family:'Syne',sans-serif;font-weight:800;font-size:.85rem;}
+.m-lbl{font-size:.66rem;font-weight:700;color:var(--yel-dk);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.18rem;}
+#mentorQ{font-size:.82rem;color:var(--txt);line-height:1.52;font-style:italic;}
+
+/* ── SECTION TITLE ── */
+.sec{font-size:.88rem;font-weight:700;color:var(--txt);margin-bottom:.78rem;
+  display:flex;align-items:center;gap:.45rem;}
+.sec::before{content:'';display:inline-block;width:4px;height:15px;background:var(--yel);
+  border-radius:2px;flex-shrink:0;}
+
+/* ── LEVEL CARDS ── */
+.lvls{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:.68rem;margin-bottom:1.1rem;}
+.lc{background:var(--surf);border:1.5px solid var(--bdr);border-radius:var(--r);
+  padding:.85rem;cursor:pointer;transition:all .18s;position:relative;}
+.lc:hover:not(.locked){border-color:var(--blue-md);transform:translateY(-2px);box-shadow:var(--sh);}
+.lc.active{border-color:var(--blue);background:var(--blue-lt);}
+.lc.done::after{content:'✓';position:absolute;top:7px;right:8px;color:var(--green);font-weight:800;font-size:.82rem;}
+.lc.locked{opacity:.42;cursor:default;}
+.lc-n{font-size:.64rem;font-weight:600;color:var(--mute);margin-bottom:.12rem;}
+.lc-nm{font-family:'Syne',sans-serif;font-size:.85rem;font-weight:700;color:var(--blue-dk);margin-bottom:.12rem;}
+.lc-s{font-size:.66rem;color:var(--mute);}
+.lc-b{height:3px;background:var(--bdr);border-radius:2px;margin-top:.48rem;}
+.lc-bf{height:100%;background:var(--yel);border-radius:2px;transition:width .4s;}
+
+/* ── LEVEL DETAIL ── */
+.ld{background:var(--surf);border:1.5px solid var(--bdr);border-radius:var(--r);padding:1.05rem;margin-bottom:1.1rem;}
+.ld-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:.85rem;flex-wrap:wrap;gap:.4rem;}
+.ldbadge{color:#fff;padding:.26rem .7rem;border-radius:6px;font-size:.74rem;font-weight:600;}
+.fom-p{background:var(--yel-lt);border:1px solid var(--yel-md);color:var(--yel-dk);
+  padding:.18rem .6rem;border-radius:5px;font-size:.67rem;font-weight:600;}
+.ep-p{background:var(--blue-lt);color:var(--blue-dk);padding:.18rem .6rem;border-radius:5px;font-size:.67rem;font-weight:600;}
+.ms-l{display:flex;flex-direction:column;gap:.38rem;}
+.ms{display:flex;align-items:flex-start;gap:.6rem;padding:.55rem .7rem;background:var(--bg);
+  border-radius:7px;cursor:pointer;transition:background .14s;}
+.ms:hover{background:var(--blue-x);}
+.ms.chk{background:var(--green-lt);}
+.ms-box{width:18px;height:18px;border:2px solid var(--bdr);border-radius:4px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:.62rem;margin-top:1px;transition:all .18s;}
+.ms.chk .ms-box{background:var(--green);border-color:var(--green);color:#fff;}
+.ms-body strong{font-size:.8rem;font-weight:600;display:block;line-height:1.32;}
+.ms-body small{font-size:.69rem;color:var(--mute);margin-top:1px;display:block;}
+
+/* ── UN-AI-ABLE ── */
+.unaible{background:var(--surf);border:1.5px solid var(--bdr);border-radius:var(--r);padding:1.05rem;margin-bottom:1.1rem;}
+.ir{display:flex;gap:.45rem;align-items:center;margin-top:.48rem;flex-wrap:wrap;}
+.ir input{flex:1;min-width:170px;}
+.ub-l{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.6rem;}
+.ub{background:var(--yel-lt);border:1.5px solid var(--yel-md);color:var(--yel-dk);
+  padding:.26rem .65rem;border-radius:6px;font-size:.74rem;font-weight:600;
+  display:flex;align-items:center;gap:.3rem;}
+.ub button{background:none;border:none;color:var(--yel-dk);font-size:.82rem;padding:0;line-height:1;cursor:pointer;}
+
+/* ── FORM ELEMENTS ── */
+input[type=text],input[type=number],input[type=date],textarea,select{
+  width:100%;border:1.5px solid var(--bdr);border-radius:var(--r-sm);
+  padding:.48rem .76rem;font-size:.82rem;color:var(--txt);background:var(--bg);
+  resize:vertical;transition:border .18s;outline:none;}
+input[type=text]:focus,input[type=number]:focus,input[type=date]:focus,textarea:focus,select:focus{border-color:var(--blue);}
+select{cursor:pointer;}
+.btn{background:var(--blue);color:#fff;border:none;padding:.46rem 1rem;border-radius:var(--r-sm);
+  font-size:.78rem;font-weight:600;transition:background .18s;}
+.btn:hover{background:var(--blue-dk);}
+.btn-sm{padding:.32rem .72rem;font-size:.73rem;}
+.btn-y{background:var(--yel);color:var(--blue-dk);}
+.btn-y:hover{background:var(--yel-dk);color:#fff;}
+.btn-g{background:transparent;border:1.5px solid var(--bdr);color:var(--txt);}
+.btn-g:hover{border-color:var(--blue);color:var(--blue);}
+.btn-red{background:var(--red-lt);border:1.5px solid #F5C6C4;color:var(--red);}
+.btn-red:hover{background:var(--red);color:#fff;}
+
+/* ── GRIDS ── */
+.rg{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin-bottom:1.1rem;}
+@media(max-width:600px){.rg{grid-template-columns:1fr;}}
+.rc{background:var(--surf);border:1.5px solid var(--bdr);border-radius:var(--r);padding:.92rem;}
+.rl{font-size:.67rem;font-weight:700;color:var(--blue-dk);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.4rem;}
+.chip{background:var(--blue-lt);color:var(--blue-dk);border:none;padding:.25rem .6rem;border-radius:5px;
+  font-size:.7rem;font-weight:600;cursor:pointer;margin:.18rem .14rem 0 0;transition:background .15s;}
+.chip:hover{background:var(--blue-x);}
+
+/* ── GOAL BOX ── */
+.gb{background:var(--surf);border:1.5px solid var(--bdr);border-radius:var(--r);padding:.92rem;margin-bottom:1.1rem;}
+.gr{display:flex;gap:.45rem;margin-bottom:.45rem;}
+.gr input{flex:1;}
+.gl{display:flex;flex-direction:column;gap:.32rem;margin-top:.4rem;}
+.gi{display:flex;align-items:center;gap:.45rem;padding:.4rem .65rem;background:var(--bg);border-radius:7px;font-size:.79rem;}
+.gi.done span{text-decoration:line-through;color:var(--mute);}
+.gi input[type=checkbox]{width:15px;height:15px;flex-shrink:0;}
+.gi .dx{background:none;border:none;color:var(--mute);font-size:.82rem;cursor:pointer;margin-left:auto;padding:0;}
+
+/* ── QUIZ CTA ── */
+.qcta{background:var(--blue-lt);border:1.5px solid var(--blue-x);border-radius:var(--r);
+  padding:.9rem 1.05rem;margin-bottom:1.1rem;display:flex;align-items:center;
+  justify-content:space-between;gap:.7rem;flex-wrap:wrap;}
+.qcta p{font-size:.79rem;color:var(--blue-dk);line-height:1.44;}
+.qcta strong{font-size:.86rem;display:block;margin-bottom:.17rem;}
+
+/* ── EPISODES ── */
+.eg{display:grid;grid-template-columns:repeat(auto-fill,minmax(222px,1fr));gap:.7rem;margin-bottom:1.1rem;}
+.ep{background:var(--surf);border:1.5px solid var(--bdr);border-radius:var(--r);
+  padding:.82rem .92rem;transition:all .18s;}
+.ep:hover{border-color:var(--blue-md);box-shadow:var(--sh);}
+.ep-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.36rem;}
+.ep-num{font-size:.66rem;font-weight:600;color:var(--mute);}
+.ep-lvl{font-size:.62rem;font-weight:700;padding:.15rem .46rem;border-radius:4px;}
+.ep-title{font-size:.78rem;font-weight:600;color:var(--txt);line-height:1.33;margin-bottom:.48rem;}
+.ep-desc{font-size:.7rem;color:var(--mute);line-height:1.37;margin-bottom:.48rem;}
+.ep-link{display:inline-flex;align-items:center;gap:.26rem;font-size:.72rem;color:var(--blue);font-weight:600;}
+
+/* ── INCOME ── */
+.ib{background:var(--surf);border:1.5px solid var(--bdr);border-radius:var(--r);padding:1.18rem;margin-bottom:1.1rem;}
+.tot{font-family:'Syne',sans-serif;font-size:1.95rem;font-weight:800;color:var(--blue-dk);}
+.if{display:flex;gap:.45rem;flex-wrap:wrap;align-items:center;margin-bottom:.7rem;}
+.if input[type=text]{flex:2;min-width:144px;}
+.if input[type=number]{flex:1;min-width:105px;}
+.if input[type=date]{flex:1;min-width:115px;}
+.il{display:flex;flex-direction:column;gap:.34rem;}
+.ii{display:flex;align-items:center;justify-content:space-between;padding:.46rem .7rem;
+  background:var(--bg);border-radius:7px;font-size:.79rem;flex-wrap:wrap;gap:.3rem;}
+.ia{font-weight:700;color:var(--green);}
+.id-btn{background:none;border:none;color:var(--red);cursor:pointer;font-size:.8rem;}
+
+/* ── TOOLBOX ── */
+.tg{display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:.85rem;}
+.tool{background:var(--surf);border:1.5px solid var(--bdr);border-radius:var(--r);padding:.92rem;transition:all .18s;}
+.tool:hover{border-color:var(--blue-md);box-shadow:var(--sh);}
+.tool.featured{border-color:var(--yel-md);background:var(--yel-lt);}
+.th{display:flex;align-items:center;gap:.7rem;margin-bottom:.52rem;}
+.ti{width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;font-weight:800;font-size:.9rem;flex-shrink:0;}
+.tn{font-weight:700;font-size:.88rem;}
+.tc{font-size:.65rem;color:var(--mute);font-weight:600;text-transform:uppercase;letter-spacing:.4px;}
+.td{font-size:.76rem;color:var(--mute);line-height:1.43;margin-bottom:.5rem;}
+.tl{display:inline-flex;align-items:center;gap:.26rem;font-size:.76rem;color:var(--blue);font-weight:600;}
+.tool-note{font-size:.68rem;color:var(--red);font-weight:600;margin-top:.35rem;}
+
+/* ── STATS ── */
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:.7rem;margin-bottom:1.1rem;}
+.st{background:var(--surf);border:1.5px solid var(--bdr);border-radius:var(--r);padding:.8rem;text-align:center;}
+.st-n{font-family:'Syne',sans-serif;font-size:1.65rem;font-weight:800;color:var(--blue-dk);}
+.st-l{font-size:.66rem;color:var(--mute);font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-top:.15rem;}
+
+/* ── IDEATION LAB ── */
+.idea-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:.85rem;margin-bottom:1.1rem;}
+.idea-card{background:var(--surf);border:1.5px solid var(--bdr);border-radius:var(--r);
+  padding:.92rem;transition:all .18s;}
+.idea-card:hover{border-color:var(--blue-md);box-shadow:var(--sh);}
+.idea-card.selected{border-color:var(--blue);background:var(--blue-lt);}
+.ic-icon{font-size:1.5rem;margin-bottom:.4rem;}
+.ic-name{font-weight:700;font-size:.88rem;margin-bottom:.25rem;}
+.ic-desc{font-size:.75rem;color:var(--mute);line-height:1.42;}
+.ic-tag{display:inline-block;font-size:.64rem;font-weight:600;padding:.15rem .48rem;
+  border-radius:4px;margin-top:.45rem;}
+.idea-canvas{background:var(--surf);border:1.5px solid var(--bdr);border-radius:var(--r);padding:1.05rem;margin-bottom:1.1rem;}
+.canvas-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:.6rem;margin-top:.7rem;}
+.canvas-box{background:var(--bg);border:1px solid var(--bdr);border-radius:var(--r-sm);padding:.6rem;}
+.canvas-box label{font-size:.66rem;font-weight:700;color:var(--blue-dk);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:.3rem;}
+.canvas-box textarea{font-size:.76rem;height:68px;background:transparent;border:none;outline:none;
+  resize:none;width:100%;color:var(--txt);padding:0;}
+.canvas-box textarea::placeholder{color:var(--mute);}
+.ship-checklist{display:flex;flex-direction:column;gap:.38rem;margin-top:.7rem;}
+.ship-item{display:flex;align-items:center;gap:.55rem;padding:.45rem .68rem;
+  background:var(--bg);border-radius:7px;font-size:.8rem;cursor:pointer;}
+.ship-item.done-s{background:var(--green-lt);}
+.ship-box{width:18px;height:18px;border:2px solid var(--bdr);border-radius:4px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:.62rem;transition:all .18s;}
+.ship-item.done-s .ship-box{background:var(--green);border-color:var(--green);color:#fff;}
+
+/* ── FP BADGE ── */
+.fp{background:linear-gradient(135deg,var(--blue-dk),var(--blue));color:#fff;border-radius:var(--r);
+  padding:1.45rem;text-align:center;margin-bottom:1.1rem;display:none;}
+.fp h2{font-size:1.25rem;margin:.4rem 0 .18rem;}
+.fp p{font-size:.82rem;opacity:.82;}
+
+/* ── SETTINGS ── */
+.sett-section{background:var(--surf);border:1.5px solid var(--bdr);border-radius:var(--r);
+  padding:1.05rem;margin-bottom:1.1rem;}
+.sett-row{display:flex;flex-direction:column;gap:.35rem;margin-bottom:.75rem;}
+.sett-row:last-child{margin-bottom:0;}
+.sett-label{font-size:.76rem;font-weight:600;color:var(--txt);}
+.sett-hint{font-size:.7rem;color:var(--mute);margin-top:.15rem;}
+.deg-choice{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.5rem;margin-top:.4rem;}
+.deg-btn{background:var(--bg);border:1.5px solid var(--bdr);border-radius:var(--r-sm);
+  padding:.55rem .8rem;font-size:.78rem;font-weight:600;color:var(--txt);text-align:left;
+  transition:all .18s;}
+.deg-btn.sel{background:var(--blue-lt);border-color:var(--blue);color:var(--blue-dk);}
+.deg-btn:hover:not(.sel){border-color:var(--blue-md);}
+.mod-list{display:flex;flex-direction:column;gap:.35rem;margin-top:.5rem;}
+.mod-item{display:flex;align-items:center;gap:.45rem;padding:.4rem .65rem;
+  background:var(--bg);border-radius:7px;font-size:.79rem;}
+.mod-item input[type=text]{flex:1;}
+.mod-item .del-m{background:none;border:none;color:var(--mute);cursor:pointer;font-size:.82rem;padding:0;}
+.add-mod-row{display:flex;gap:.45rem;margin-top:.45rem;}
+.add-mod-row input{flex:1;}
+.level-mod-map{display:flex;flex-direction:column;gap:.38rem;margin-top:.5rem;}
+.lmm-row{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;}
+.lmm-label{min-width:100px;font-size:.78rem;font-weight:600;}
+.lmm-row select{flex:1;min-width:180px;}
+.danger-zone{background:var(--red-lt);border:1.5px solid #F5C6C4;border-radius:var(--r);padding:.9rem;margin-bottom:1.1rem;}
+.danger-zone p{font-size:.78rem;color:var(--red);margin-bottom:.55rem;}
+
+/* ── OVERLAY (Quote) ── */
+.ov{position:fixed;inset:0;background:rgba(8,25,55,.65);z-index:800;display:none;
+  align-items:center;justify-content:center;padding:1rem;}
+.ov.show{display:flex;}
+.qb{background:var(--surf);border-radius:var(--r);padding:1.65rem;max-width:450px;
+  width:100%;text-align:center;box-shadow:var(--sh);}
+.qp{font-size:.68rem;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.45rem;}
+.qt{font-size:.96rem;font-style:italic;line-height:1.63;color:var(--txt);margin-bottom:.7rem;}
+.qe{font-size:.69rem;color:var(--mute);}
+.qbtns{display:flex;gap:.45rem;justify-content:center;margin-top:.9rem;flex-wrap:wrap;}
+
+#cc{position:fixed;inset:0;pointer-events:none;z-index:9999;display:none;}
+.hr{border:none;border-top:1px solid var(--bdr);margin:.9rem 0;}
+.mt5{margin-top:.5rem;}.mt1{margin-top:1rem;}.mb5{margin-bottom:.5rem;}.mb1{margin-bottom:.95rem;}
+.sm{font-size:.79rem;}.mute{color:var(--mute);}.it{font-style:italic;}
+.row{display:flex;gap:.55rem;align-items:center;flex-wrap:wrap;}
+.badge{display:inline-block;padding:.16rem .52rem;border-radius:4px;font-size:.68rem;font-weight:600;}
+.b-blue{background:var(--blue-lt);color:var(--blue-dk);}
+.b-yel{background:var(--yel-lt);color:var(--yel-dk);}
+.b-grn{background:var(--green-lt);color:var(--green);}
+</style>
+</head>
+<body>
+<canvas id="cc"></canvas>
+
+<!-- QUOTE OVERLAY -->
+<div class="ov" id="qOv">
+  <div class="qb">
+    <div class="qp">✨ CreatingReorganized — Prof. Dr. E</div>
+    <p class="qt" id="qT"></p>
+    <p class="qe" id="qE"></p>
+    <div class="qbtns">
+      <button class="btn btn-y" onclick="nxtQ()">Another one 🔄</button>
+      <button class="btn btn-g" onclick="closeQ()">Back to grind 💪</button>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div>
+    <div class="hdr-title"><span class="cr-logo">CR</span>CreatingReorganized</div>
+    <div class="hdr-sub">Side-Hustle Hero's Journey · Prof. Dr. Eleonore Soei-Winkels</div>
+  </div>
+  <div class="hdr-right">
+    <button class="crbtn" onclick="showQ()">✨ CreatingReorganized</button>
+    <button class="settbtn" onclick="swTab('settings')">⚙ Settings</button>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab active" data-t="journey" onclick="sw(this)">🗺 Journey</div>
+  <div class="tab" data-t="ideation" onclick="sw(this)">💡 Ideation Lab</div>
+  <div class="tab" data-t="reflect" onclick="sw(this)">📓 Reflection</div>
+  <div class="tab" data-t="episodes" onclick="sw(this)">🎙 Episodes</div>
+  <div class="tab" data-t="income" onclick="sw(this)">💰 Income</div>
+  <div class="tab" data-t="toolbox" onclick="sw(this)">🛠 Toolbox</div>
+  <div class="tab" data-t="overview" onclick="sw(this)">📊 Overview</div>
+  <div class="tab" data-t="settings" onclick="sw(this)">⚙ Settings</div>
+</div>
+
+<div class="wrap">
+
+<!-- ════ JOURNEY ════ -->
+<div class="panel active" id="panel-journey">
+  <div class="hero">
+    <div class="av-wrap">
+      <svg id="hSvg" width="78" height="78" viewBox="0 0 78 78" fill="none"></svg>
+      <div class="av-name" id="avN">Student Seeker</div>
+    </div>
+    <div>
+      <div style="margin-bottom:.18rem;"><span id="degreeDisplay" class="badge b-blue" style="font-size:.66rem;"></span></div>
+      <h2 id="hT" style="font-size:1.22rem;margin-bottom:.2rem;">Level 1 — Spark</h2>
+      <p id="hD" style="font-size:.78rem;color:rgba(255,255,255,.72);line-height:1.48;max-width:470px;"></p>
+      <div style="margin-top:.7rem;">
+        <div class="xp-lbl"><span>Milestone Progress</span><span id="xpL">0 / 4</span></div>
+        <div class="xp-t"><div class="xp-f" id="xpF" style="width:0%"></div></div>
+      </div>
+    </div>
+    <div class="lbadge"><div class="n" id="lN">1</div><div class="t">LEVEL</div></div>
+  </div>
+
+  <div class="mentor">
+    <div class="m-av">E</div>
+    <div>
+      <div class="m-lbl">Prof. Dr. E — Real Talk</div>
+      <div id="mentorQ"></div>
+    </div>
+  </div>
+
+  <div class="qcta">
+    <div>
+      <strong>📋 Start with the Business Readiness Quiz</strong>
+      <p>Prof. Dr. E recommends checking your readiness first — it maps directly to your Hero Journey level. Takes 3 minutes.</p>
+    </div>
+    <a href="https://32j6sq46ktj.typeform.com/business?typeform-source=postdoctransformation.ac-page.com" target="_blank" class="btn btn-y btn-sm">Take Quiz →</a>
+  </div>
+
+  <div class="sec">Your 6 Levels</div>
+  <div class="lvls" id="lvlG"></div>
+
+  <div class="ld" id="ldP">
+    <div class="ld-h">
+      <div style="display:flex;align-items:center;gap:.42rem;flex-wrap:wrap;">
+        <span class="ldbadge" id="ldB">Level 1 — Spark</span>
+        <span class="fom-p" id="ldF">FOM Module</span>
+      </div>
+      <span class="ep-p" id="ldE">Episodes 1–4</span>
+    </div>
+    <div class="ms-l" id="msL"></div>
+  </div>
+
+  <div class="unaible">
+    <div class="sec">🧠 Un-AI-able Skill Badges</div>
+    <p class="sm mute mb5">What did you do today that an AI couldn't? Build your irreplaceable human-edge portfolio.</p>
+    <div class="ir">
+      <input type="text" id="uaI" placeholder="e.g. I had a real conversation with a mentor about my fears"/>
+      <button class="btn btn-sm" onclick="addUA()">+ Badge</button>
+    </div>
+    <div class="ub-l" id="uaL"></div>
+  </div>
+</div>
+
+<!-- ════ IDEATION LAB ════ -->
+<div class="panel" id="panel-ideation">
+  <div class="sec">💡 Side-Hustle Ideation Lab</div>
+  <p class="sm mute mb1">Entrepreneurship is a skill you build by doing, not just studying. Pick a format, sketch your idea on the canvas, then commit to shipping something small this week.</p>
+
+  <div class="sec" style="margin-bottom:.6rem;">Step 1 — Pick your hustle format</div>
+  <div class="idea-grid" id="ideaGrid"></div>
+
+  <div class="idea-canvas" id="ideaCanvas">
+    <div class="sec" style="margin-bottom:.3rem;">Step 2 — One-Page Business Canvas</div>
+    <p class="sm mute">Complete as much as you can in 15 minutes. Done is better than perfect.</p>
+    <div class="canvas-grid">
+      <div class="canvas-box"><label>🎯 Problem I solve</label><textarea id="cv-prob" placeholder="What specific pain does your customer have?"></textarea></div>
+      <div class="canvas-box"><label>👤 Who I serve (ICA)</label><textarea id="cv-ica" placeholder="One specific type of person…"></textarea></div>
+      <div class="canvas-box"><label>✨ My unique advantage</label><textarea id="cv-adv" placeholder="Why you, why now — what only YOU bring?"></textarea></div>
+      <div class="canvas-box"><label>💰 How I make money</label><textarea id="cv-rev" placeholder="Service, product, affiliate, course, content…"></textarea></div>
+      <div class="canvas-box"><label>📣 How I reach them</label><textarea id="cv-chan" placeholder="LinkedIn, podcast, Instagram, TikTok, warm outreach…"></textarea></div>
+      <div class="canvas-box"><label>🧠 Un-AI-able edge</label><textarea id="cv-uai" placeholder="What lived experience, network, or skill makes this AI-proof?"></textarea></div>
+    </div>
+    <div style="margin-top:.75rem;display:flex;gap:.5rem;flex-wrap:wrap;">
+      <button class="btn btn-sm" onclick="saveCanvas()">💾 Save Canvas</button>
+      <button class="btn btn-sm btn-y" onclick="exportCanvas()">📋 Copy as Text</button>
+    </div>
+  </div>
+
+  <div class="idea-canvas">
+    <div class="sec" style="margin-bottom:.3rem;">Step 3 — Ship Something This Week 🚀</div>
+    <p class="sm mute">The only way to know if an idea works is to put it in front of a real person. Pick at least one task to ship before Sunday.</p>
+    <div class="ship-checklist" id="shipList"></div>
+    <div class="ir mt5">
+      <input type="text" id="shipIn" placeholder="Add your own shipping task…"/>
+      <button class="btn btn-sm" onclick="addShip()">+ Add Task</button>
+    </div>
+  </div>
+
+  <div class="idea-canvas">
+    <div class="sec" style="margin-bottom:.3rem;">Step 4 — Weekly Idea Sprint Log</div>
+    <p class="sm mute mb5">Log every idea — good, bad, ridiculous. Quantity first. Your 50th idea is usually better than your 1st.</p>
+    <div class="ir">
+      <input type="text" id="ideaIn" placeholder="e.g. Sell Notion templates for FOM students, tutor for exam prep…"/>
+      <button class="btn btn-sm" onclick="addIdea()">+ Log Idea</button>
+    </div>
+    <div id="ideaLog" style="display:flex;flex-direction:column;gap:.32rem;margin-top:.6rem;"></div>
+  </div>
+</div>
+
+<!-- ════ REFLECT ════ -->
+<div class="panel" id="panel-reflect">
+  <div class="fp" id="fpB">
+    <div style="font-size:2rem;">🏆</div>
+    <h2>Future-Proof Captain — Unlocked!</h2>
+    <p>You logged your first income at Level 6. Your side-hustle is real. The world needs what only you can offer.</p>
+  </div>
+  <div class="gb">
+    <div class="sec">🎯 Self-Chosen Goals</div>
+    <p class="sm mute mb5">Autonomy-focused. Only goals YOU chose — not what you think you should want.</p>
+    <div class="gr">
+      <input type="text" id="gI" placeholder="Set a goal you own completely…" onkeydown="if(event.key==='Enter')addGoal()"/>
+      <button class="btn btn-sm" onclick="addGoal()">Add</button>
+    </div>
+    <div class="gl" id="gL"></div>
+  </div>
+  <div class="rg">
+    <div class="rc">
+      <div class="rl">🌱 Level Reflection Prompt</div>
+      <p class="it sm mute mb5" id="rPr">What unique problem can only YOU solve?</p>
+      <div id="rCh" style="display:flex;flex-wrap:wrap;margin-bottom:.52rem;"></div>
+      <textarea id="rTx" rows="5" placeholder="Write your honest reflection here…"></textarea>
+      <button class="btn btn-sm mt5" onclick="saveRef()">Save Reflection</button>
+    </div>
+    <div class="rc">
+      <div class="rl">📅 Monthly Business Intention</div>
+      <textarea id="mTx" rows="3" placeholder="Your #1 business goal this month…"></textarea>
+      <button class="btn btn-sm mt5" onclick="saveF('monthly','mTx')">Save</button>
+      <div class="hr"></div>
+      <div class="rl">🔮 Vision of Life Statement</div>
+      <textarea id="vTx" rows="3" placeholder="Your ideal working life in 3 years…"></textarea>
+      <button class="btn btn-sm mt5" onclick="saveF('vision','vTx')">Save Vision</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ EPISODES ════ -->
+<div class="panel" id="panel-episodes">
+  <div class="sec">🎙 All 24 CreatingReorganized Episodes</div>
+  <p class="sm mute mb1">Every episode maps to a level of your Hero Journey. All are published and live.</p>
+  <div class="eg" id="epG"></div>
+</div>
+
+<!-- ════ INCOME ════ -->
+<div class="panel" id="panel-income">
+  <div class="ib">
+    <div class="sec">💰 Income Log — First Euro Changes Everything</div>
+    <div style="margin-bottom:.85rem;">
+      <div class="tot" id="incTot">€0.00</div>
+      <div class="sm mute mt5">Total side-hustle income logged. Log your first euro to unlock the Future-Proof Captain badge.</div>
+    </div>
+    <div class="if">
+      <input type="text" id="iDesc" placeholder="Income source (e.g. coaching call, e-course sale, affiliate)"/>
+      <input type="number" id="iAmt" placeholder="€ amount" min="0" step="0.01"/>
+      <input type="date" id="iDt"/>
+      <button class="btn btn-sm" onclick="addInc()">Log Income</button>
+    </div>
+    <div class="il" id="iL"></div>
+  </div>
+</div>
+
+<!-- ════ TOOLBOX ════ -->
+<div class="panel" id="panel-toolbox">
+  <div class="sec">🛠 The Founder's Toolbox — Prof. Dr. E's Partner Stack</div>
+  <p class="sm mute mb1">Prof. Dr. E uses every one of these herself. All offer free trials — she earns a small commission only if you become a customer via her links.</p>
+  <div class="tg" id="tG"></div>
+
+  <div class="hr"></div>
+  <div class="sec">🤖 AI Tools for Your Side-Hustle</div>
+  <p class="sm mute mb1">These AI tools have no affiliate programme yet (as of May 2026) — but they are essential for your future-proof founder toolkit. Use the free tiers to ship faster.</p>
+  <div class="tg" id="aiToolsG"></div>
+</div>
+
+<!-- ════ OVERVIEW ════ -->
+<div class="panel" id="panel-overview">
+  <div class="sec">📊 Your Progress Dashboard</div>
+  <div class="sg" id="stG"></div>
+  <div class="rg">
+    <div class="rc">
+      <div class="rl">🏆 This Week's Wins</div>
+      <textarea id="wTx" rows="4" placeholder="List 3 things that went well this week…"></textarea>
+      <button class="btn btn-sm mt5" onclick="saveF('wins','wTx')">Save</button>
+    </div>
+    <div class="rc">
+      <div class="rl">💡 Lessons (Reframed Failures)</div>
+      <textarea id="lTx" rows="4" placeholder="One 'failure' that is actually a lesson…"></textarea>
+      <button class="btn btn-sm mt5" onclick="saveF('lessons','lTx')">Save</button>
+    </div>
+  </div>
+  <div class="rc mt1">
+    <div class="rl">🎓 FOM Module Cross-Reference — The ROI of Your Degree</div>
+    <p class="sm mute mb5">Each Journey level maps to a module in your programme. Your custom modules show how your exact classes fund your side-hustle thinking.</p>
+    <div id="fomT" style="display:flex;flex-direction:column;gap:.35rem;margin-top:.48rem;"></div>
+  </div>
+</div>
+
+<!-- ════ SETTINGS ════ -->
+<div class="panel" id="panel-settings">
+  <div class="sec">⚙ Your Academic Profile</div>
+
+  <div class="sett-section">
+    <div class="rl">🎓 Degree Programme</div>
+    <div class="sett-hint mb5">Select your degree — it adjusts the FOM Module labels and language across the app.</div>
+    <div class="deg-choice" id="degGrid"></div>
+  </div>
+
+  <div class="sett-section">
+    <div class="rl">🏫 Your University / Faculty</div>
+    <div class="sett-row">
+      <input type="text" id="uniIn" placeholder="e.g. FOM Hochschule, Düsseldorf" oninput="saveUni()"/>
+      <div class="sett-hint">Shown on your Overview dashboard.</div>
+    </div>
+  </div>
+
+  <div class="sett-section">
+    <div class="rl">📚 Your Module Names</div>
+    <div class="sett-hint mb5">Enter your exact module names from your semester plan. These replace the default FOM labels throughout the app — making it relevant for ANY degree, not just FOM.</div>
+    <div class="add-mod-row">
+      <input type="text" id="modIn" placeholder="e.g. Marketing Management, Organisational Behaviour…" onkeydown="if(event.key==='Enter')addMod()"/>
+      <button class="btn btn-sm" onclick="addMod()">+ Add Module</button>
+    </div>
+    <div class="mod-list" id="modList"></div>
+  </div>
+
+  <div class="sett-section">
+    <div class="rl">🗺 Map Modules to Journey Levels</div>
+    <div class="sett-hint mb5">Link each level to the module it relates to most. This appears in your Overview cross-reference table.</div>
+    <div class="level-mod-map" id="lvlModMap"></div>
+  </div>
+
+  <div class="sett-section">
+    <div class="rl">👤 Your Name (optional)</div>
+    <div class="sett-row">
+      <input type="text" id="nameIn" placeholder="e.g. Lena" oninput="saveName()"/>
+      <div class="sett-hint">Personalises your avatar title and overview.</div>
+    </div>
+  </div>
+
+  <div class="danger-zone">
+    <p>⚠ Reset all progress — this will erase all milestones, income, reflections, and badges. Your module settings will be kept.</p>
+    <button class="btn btn-red btn-sm" onclick="resetProgress()">Reset Progress Only</button>
+    &nbsp;
+    <button class="btn btn-red btn-sm" onclick="resetAll()">Reset Everything</button>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+
+<script>
+/* ════ STATIC DATA ════ */
+const LVS = [
+  {id:1,name:'Spark',avatar:'Student Seeker',col:'#1558A8',lt:'#EAF2FB',
+   desc:"You've felt the spark. Your unique story, skills, and curiosity are the foundation. Identify the problem only YOU can solve.",
+   mentor:'"You don\'t need to be perfect. You need to start. The video podcast you don\'t make today is the trust you don\'t build tomorrow. Your story is your unfair advantage — no AI can replicate your lived experience." — Episode 1',
+   defMod:'Intro to Business Psychology',ep:'Episodes 1–4',
+   prompt:'What unique problem can only YOU solve?',
+   prompts:['What is your unfair advantage?','Who needs your story most right now?','What fear is actually a signal to start?'],
+   ms:[
+     {id:'1a',t:'Watch Episode 1 — Why founders need a video podcast',s:'Build know-like-trust 24/7 — your story is your moat'},
+     {id:'1b',t:'Define your Ideal Customer Avatar (ICA)',s:'One person, one problem, one transformation'},
+     {id:'1c',t:'Write your "Vision of Life" statement',s:'Not just business goals — your complete life blueprint'},
+     {id:'1d',t:'Log your first Un-AI-able Skill Badge',s:'What did you do today that no AI ever could?'},
+   ]},
+  {id:2,name:'Shield',avatar:'Idea Protector',col:'#0B3D7A',lt:'#D8EAF8',
+   desc:"Protect your idea by stress-testing it. Validate your audience, build your lead-qualification muscle, and set up your first tools.",
+   mentor:'"Your lead magnet is not your product — it\'s a promise. The moment someone gives you their email, they\'re trusting you with attention. Qualify your leads before you pour energy into someone who will never buy." — Episode 2',
+   defMod:'Work & Org Psychology I',ep:'Episodes 5–8',
+   prompt:'Who is your ideal client — and what keeps them up at night?',
+   prompts:['What is your lead magnet?','How do you qualify vs. disqualify a lead?','What assumption haven\'t you tested yet?'],
+   ms:[
+     {id:'2a',t:'Watch Episode 2 — Qualify leads & convert customers',s:'Authenticity + automation = sustainable sales'},
+     {id:'2b',t:'Create a simple lead magnet (checklist, quiz, or guide)',s:'Use Typeform to collect responses and qualify leads'},
+     {id:'2c',t:'Define your Stress Appraisal — challenge vs. threat',s:'Core concept from Work & Org Psych I: your resilience engine'},
+     {id:'2d',t:'Set up a free trial of Podbean or Descript',s:'Get comfortable with your future production stack now'},
+   ]},
+  {id:3,name:'Pivot',avatar:'Resilient Rebuilder',col:'#B87E00',lt:'#FFF8E1',
+   desc:"Something didn't go as planned — good. Pivot intentionally. Reframe every failure as structured feedback. Real founders are made here.",
+   mentor:'"Stress is not the enemy — stagnation is. When something fails, you\'ve received free market research. The Elaboration Likelihood Model tells us: people who process deeply become loyal clients." — Episode 3',
+   defMod:'Work & Org Psychology II',ep:'Episodes 9–12',
+   prompt:'List one "failure" this week that is actually a lesson — reframe it fully.',
+   prompts:['What feedback have you been ignoring?','What would you do differently with hindsight?','What is the market telling you through rejection?'],
+   ms:[
+     {id:'3a',t:'Watch Episodes 3 & 4 — Storytelling & Seasonal Strategy',s:'Behind-the-scenes stories build Bandura-level social trust'},
+     {id:'3b',t:'Document one pivot or failure as a structured lesson',s:'Reframing is a cognitive superpower — use it deliberately'},
+     {id:'3c',t:'Record your first test episode (even 2 minutes)',s:"Don't edit. Just record. Descript makes it forgiving."},
+     {id:'3d',t:'Map your content calendar to the academic season',s:'Batch-record before semester deadlines hit you'},
+   ]},
+  {id:4,name:'Flow',avatar:'Content Creator',col:'#1B7A41',lt:'#E5F7ED',
+   desc:"You have a system. Content flows. Leads come in. Your sales funnel is alive. Now you optimize, automate, and scale without burning out.",
+   mentor:'"Loss Aversion and the Zeigarnik Effect are your best marketing friends. Give your audience 80% and they\'ll come back for the other 20%. Free content builds trust — paid content delivers transformation. Know the difference." — Episode 6',
+   defMod:'Digital Marketing & Automation',ep:'Episodes 13–16',
+   prompt:'What part of your workflow can be automated this week?',
+   prompts:['Where is your funnel leaking?','What content is doing 80% of the work?','How can you serve more people with the same effort?'],
+   ms:[
+     {id:'4a',t:'Build a 3-email sequence in ActiveCampaign',s:'Automate the "nurture" so you can focus on the "create"'},
+     {id:'4b',t:'Publish 2+ episodes and cross-post on social media',s:'Use Metricool to schedule all platforms in one session'},
+     {id:'4c',t:'Design your free-vs-paid content split strategy',s:'Loss Aversion + Zeigarnik Effect = a funnel that pulls, not pushes'},
+     {id:'4d',t:'Create a Thinkific course outline or coaching package',s:'Your e-course is your scalable income asset'},
+   ]},
+  {id:5,name:'Tribe',avatar:'Community Builder',col:'#5D3FD3',lt:'#F0EBFF',
+   desc:"Stop broadcasting, start co-creating. Your audience becomes your tribe — they share your work, give feedback, and multiply your reach organically.",
+   mentor:'"When your audience watches you succeed in front of them, they believe they can too. Your video podcast is not content — it\'s a mirror for their own potential. That\'s why it converts." — Episode 7',
+   defMod:'Social & Organizational Behaviour',ep:'Episodes 17–20',
+   prompt:'Who in your audience gave you the most valuable feedback? How can you feature their story?',
+   prompts:['How are you building social proof right now?','What does your community need that only you can curate?','How do you celebrate your listeners publicly?'],
+   ms:[
+     {id:'5a',t:"Watch Episodes 7 & 8 — Storytelling & Sales Funnels",s:"Bandura's Social Learning Theory meets your business model"},
+     {id:'5b',t:'Feature a listener or client story in an episode',s:'Meet-Your-Clients series: the ultimate trust builder'},
+     {id:'5c',t:'Launch a Typeform feedback survey to your email list',s:'Community feedback = your next 4 episode ideas, free'},
+     {id:'5d',t:'Give a 5-star review to CreatingReorganized & share it',s:'Tag Prof. Dr. E — get a free 15-min discovery call!'},
+   ]},
+  {id:6,name:'Owner',avatar:'Future-Proof Captain',col:'#1558A8',lt:'#EAF2FB',
+   desc:"You are a Future-Proof founder. Multiple income streams, a loyal audience, and a business that serves your Vision of Life — not the other way around.",
+   mentor:'"You built this with your unique human skills. The platform may change, the algorithm will shift — but your personal brand, your genuine relationships, and your point of view are AI-resistant assets that compound over time. You are future-proof." — Episode 24',
+   defMod:'Entrepreneurship & Future of Work',ep:'Episodes 21–24',
+   prompt:'What income stream could you add in the next 30 days without working more hours?',
+   prompts:['How are you packaging your expertise at scale?','What would your business look like without your active presence?','How are you protecting your human-edge competitive advantage?'],
+   ms:[
+     {id:'6a',t:'Log your first side-hustle income in the Income Log',s:'🎉 This triggers the Future-Proof Captain badge!'},
+     {id:'6b',t:'Develop a second income stream (affiliate, e-course, group)',s:'Multiple streams = resilience. Single stream = risk.'},
+     {id:'6c',t:'Watch Episodes 22–24 — Scaling, Monetizing & Ecosystem',s:'Your legacy is the content that keeps working while you sleep'},
+     {id:'6d',t:'Complete all 24 episodes and graduate your Hero Journey',s:'Share your journey — tag @PostdocTransformation!'},
+   ]},
+];
+
+const EPS = [
+  {n:1,lvl:1,t:'Why founders of a small business need a video podcast to build trust and boost sales',d:'Build trust 24/7/365. Your video podcast is the most scalable trust asset you can create as a solo founder.'},
+  {n:2,lvl:1,t:'How to qualify leads and convert them into paying customers',d:'Practical lead qualification using authentic storytelling, smart automation, and a work-life-balanced workflow.'},
+  {n:3,lvl:1,t:'Storytelling to engage and convert your leads',d:"Behind-the-scenes stories powered by Bandura's Social Learning Theory build the deepest trust fastest."},
+  {n:4,lvl:1,t:'Seasonal strategies for recording, editing and publishing your video podcast',d:'Batch-record, avoid "podfade," and align your content schedule to seasonal business rhythms.'},
+  {n:5,lvl:2,t:'How to promote your video podcast on social media and drive traffic to your business',d:'Platform strategy, content repurposing, and a human-avatar-centred approach to growing your audience.'},
+  {n:6,lvl:2,t:'Free content vs. paid offers — the best mix for your video podcast',d:'Use Loss Aversion and the Zeigarnik Effect to balance generosity with profitability.'},
+  {n:7,lvl:2,t:'Best ways to showcase your products or services on a video podcast to drive sales',d:'Demonstration video strategy using declarative vs. procedural memory and the scarcity principle.'},
+  {n:8,lvl:2,t:'Creating a sales funnel with your video podcast',d:"Map your listener's journey through AIDA using the Elaboration Likelihood Model."},
+  {n:9,lvl:3,t:'Video podcast — business marketing without burnout',d:'Sustainable content creation systems so your marketing engine never costs you your health or joy.'},
+  {n:10,lvl:3,t:'The ROI of your business promotional video podcast',d:'Measure and maximise real return on investment beyond vanity metrics like downloads and views.'},
+  {n:11,lvl:3,t:'Test and monetize your ideas with your business promotional video podcast',d:'Use your podcast as a living lab — test ideas cheaply before investing big resources into them.'},
+  {n:12,lvl:3,t:'Build your supply chain of success with your podcast',d:'Map your content-to-client pipeline and build a resilient, scalable business supply chain.'},
+  {n:13,lvl:4,t:'Become the obvious choice over AI — with psychological heuristics',d:'Leverage availability heuristics and anchoring effects to make yourself the natural default choice.'},
+  {n:14,lvl:4,t:'Stop marketing burnout — save your Podcast ROI',d:'Boundaries, batching, and automation strategies to protect your creative energy and productivity.'},
+  {n:15,lvl:4,t:'Future-proof your business and your personal brand',d:'Build AI-resistant assets: your point of view, your authentic network, and your genuine human brand.'},
+  {n:16,lvl:4,t:'The quiet sales machine — automating lead generation',d:'Set-and-forget marketing systems that generate qualified leads while you live your Vision of Life.'},
+  {n:17,lvl:5,t:'The ROI of a video podcast with your face on it',d:'Why showing up on camera compounds your trust capital faster than any other available format.'},
+  {n:18,lvl:5,t:'Scaling your presence in multiple languages',d:'Expand your reach globally using AI-assisted multilingual content strategy without losing authenticity.'},
+  {n:19,lvl:5,t:'Visibility without vanity — multi-social media hacks',d:'Repurpose one episode into 10 pieces of content without losing your authentic voice or burning out.'},
+  {n:20,lvl:5,t:'Developing new business ideas based on data',d:'Turn your podcast analytics and audience feedback into your next revenue stream and product idea.'},
+  {n:21,lvl:6,t:'Scaling your legacy with your video podcast',d:'Build evergreen content assets that generate real business value long after they are published.'},
+  {n:22,lvl:6,t:'Monetizing your message — e-course to membership',d:'Package your expertise into scalable digital products: from online course to recurring membership.'},
+  {n:23,lvl:6,t:'Your ultimate client & supplier ecosystem',d:'Build a complete ecosystem where your podcast sits at the centre of every key business relationship.'},
+  {n:24,lvl:6,t:'Your ultimate client & supplier ecosystem — the finale',d:'The complete Future-Proof blueprint: automated income, loyal tribe, and your Vision of Life realised.'},
+];
+
+const TOOLS = [
+  {n:'Podbean',cat:'Hosting & Distribution',icon:'PB',bg:'#1558A8',ic:'#fff',
+   d:"Host, distribute to all major podcast players, monetise with dynamic ads, and get audience demographics to sharpen future episodes.",link:'https://www.podbean.com/esw',cta:'Try Podbean →'},
+  {n:'Descript',cat:'Video & Audio AI Editing',icon:'De',bg:'#2D2D2D',ic:'#fff',
+   d:'AI-powered text-based video and audio editing. Remove filler words, edit your script like a Word doc, create social clips in minutes — not hours.',link:'https://get.descript.com/creatingreorganized',cta:'Try Descript →'},
+  {n:'Typeform',cat:'Data & Feedback',icon:'Tf',bg:'#262627',ic:'#fff',
+   d:'Fun, dynamic forms for lead magnets, quiz funnels, surveys, and feedback. The most engaging way to qualify leads and understand your audience.',link:'https://typeform.cello.so/FxXD1YT3V9z',cta:'Try Typeform →'},
+  {n:'Thinkific',cat:'E-Courses & Membership',icon:'Tk',bg:'#5B2BE8',ic:'#fff',
+   d:'Create, host, market and sell AI-powered e-courses and memberships. Turn your podcast expertise into scalable digital products that earn while you sleep.',link:'https://get.thinkific.com/give-a-month-program/?gam=b1a5dca9a5',cta:'Try Thinkific →'},
+  {n:'ActiveCampaign',cat:'Email CRM & Automation',icon:'AC',bg:'#356AE6',ic:'#fff',
+   d:"Integrated email marketing automation, CRM, and website builder. The engine behind Prof. Dr. E's entire lead-nurture and sales automation system.",link:'https://try.activecampaign.com/creatingreorganized',cta:'Try ActiveCampaign →'},
+  {n:'Metricool',cat:'Social Media Scheduling',icon:'Mc',bg:'#00C9A7',ic:'#fff',
+   d:'Plan, schedule, and analyse your social media content across LinkedIn, Instagram, TikTok, Pinterest and YouTube — all from one clean dashboard.',link:'https://s.mtrbio.com/DMOGXJ',cta:'Try Metricool →'},
+];
+
+const AI_TOOLS = [
+  {n:'Claude (Anthropic)',cat:'AI Writing & Strategy',icon:'Cl',bg:'#C97A4A',ic:'#fff',
+   d:"Prof. Dr. E's recommended AI for writing episode scripts, refining your ICA, structuring e-course content, and your complete business strategy — because it reasons, not just completes.",
+   link:'https://claude.ai',cta:'Try Claude Free →',
+   note:'No individual affiliate programme yet (enterprise partners only as of 2026). Use the free tier to build your business.'},
+  {n:'Google Gemini',cat:'AI Research & Multilingual',icon:'Gm',bg:'#4285F4',ic:'#fff',
+   d:"Best for deep research, competitor analysis, and multilingual content creation. Integrates natively with Google Workspace — ideal if you already live in Docs, Sheets and Gmail.",
+   link:'https://gemini.google.com',cta:'Try Gemini Free →',
+   note:'No individual affiliate programme for Gemini AI. Google Cloud has one (US/Canada only). Use the free tier.'},
+  {n:'GitHub / GitHub Copilot',cat:'Coding & Building',icon:'GH',bg:'#24292E',ic:'#fff',
+   d:"If your side-hustle involves anything technical — Copilot helps you build faster. Even non-coders use it to create landing pages, automate with scripts, and prototype ideas quickly.",
+   link:'https://github.com',cta:'Try GitHub Free →',
+   note:'GitHub has no affiliate programme. GitHub Student Developer Pack is free for verified students — get $200+ in free tools.'},
+];
+
+const DEGREES = [
+  {id:'bsc',label:'BSc — Bachelor of Science'},
+  {id:'bba',label:'BBA — Bachelor of Business'},
+  {id:'ba',label:'BA — Bachelor of Arts'},
+  {id:'msc',label:'MSc — Master of Science'},
+  {id:'mba',label:'MBA — Master of Business'},
+  {id:'ma',label:'MA — Master of Arts'},
+  {id:'phd',label:'PhD / Doctoral Programme'},
+  {id:'other',label:'Other / Not Listed'},
+];
+
+const HUSTLE_TYPES = [
+  {icon:'🎙',name:'Content Creator',desc:'Podcast, YouTube, TikTok, newsletter. Build audience first, monetise second. Lowest barrier. Highest compounding value.',tag:'Low cost · High effort',col:'#EAF2FB',tcol:'#1558A8'},
+  {icon:'🎓',name:'Knowledge Seller',desc:'E-course, workshop, bootcamp, coaching. Package what you already know from your degree into something others will pay to learn.',tag:'Medium cost · Scalable',col:'#E5F7ED',tcol:'#1B7A41'},
+  {icon:'🛠',name:'Freelance Service',desc:'Consulting, design, writing, translation, data analysis. Sell skills from your degree directly — the fastest path to first income.',tag:'No cost · Immediate income',col:'#FFF8E1',tcol:'#B87E00'},
+  {icon:'🤝',name:'Affiliate Marketer',desc:'Promote tools you genuinely use and earn commission. Start with Prof. Dr. E\'s toolbox partners — every one has a programme.',tag:'No cost · Passive income',col:'#F0EBFF',tcol:'#5D3FD3'},
+  {icon:'📦',name:'Digital Product',desc:'Notion templates, Canva packs, study guides, cheat sheets, eBooks. Create once, sell forever. Perfect as a student.',tag:'Low cost · Fully passive',col:'#FDECEA',tcol:'#C0392B'},
+  {icon:'🌐',name:'Community Builder',desc:'Build a niche community on Discord, Slack, or LinkedIn. Monetise via membership, sponsors, or as a launchpad for other offers.',tag:'Low cost · Network leverage',col:'#FFFBE6',tcol:'#C99E00'},
+];
+
+const DEFAULT_SHIP = [
+  'Send my idea to 3 real people and ask for honest feedback',
+  'Post one piece of content about my side-hustle on LinkedIn or Instagram',
+  'Set up a free Typeform and collect my first 10 responses',
+  'Record a 2-minute video explaining my idea — watch it back',
+  'DM one potential customer or collaborator',
+  'Launch a landing page (Notion, Carrd, or a simple ActiveCampaign page)',
+  'Create a free lead magnet and share it in one group or community',
+];
+
+const QS = [
+  {t:"You don't need to be perfect. You need to start. The video podcast you don't make today is the trust you don't build tomorrow. Your story is your unfair advantage — no AI can replicate your lived experience.",e:'Episode 1'},
+  {t:"Your lead magnet is a promise. The moment someone gives you their email, they are trusting you with their attention. Don't waste it. Qualify before you pour energy into someone who will never buy.",e:'Episode 2'},
+  {t:"Stress is not the enemy — stagnation is. When something fails, you've received free market research. A pivot is not a failure. It's a data-driven strategic decision.",e:'Episode 3'},
+  {t:"Batch-record in your high-energy windows. Your podcast doesn't need to be live to be timely. Plan seasonally, show up consistently, and let your discipline compound.",e:'Episode 4'},
+  {t:"Loss Aversion is not manipulation — it's psychology. If you don't show your audience what they're missing by not solving their problem, they will stay stuck. Help them feel the gap so you can bridge it.",e:'Episode 6'},
+  {t:"When your audience watches you succeed in front of them, they believe they can too. Your video podcast is not content — it's a mirror for their own potential. That's why it converts.",e:'Episode 7'},
+  {t:"The Elaboration Likelihood Model tells us that people who process information deeply become loyal clients. Don't just entertain — educate. Give them something worth thinking about.",e:'Episode 8'},
+  {t:"Burnout is not a badge of honour. It is a signal that your system is broken. Automate the predictable so you can be fully present for the irreplaceable.",e:'Episode 9'},
+  {t:"Your podcast ROI is not measured in download numbers. It's measured in trust conversations that become paying clients. Track the relationship, not just the reach.",e:'Episode 11'},
+  {t:"You cannot out-algorithm your own humanity. The heuristics that make people choose you — familiarity, expertise, genuine likability — are built over time, not hacked overnight.",e:'Episode 13'},
+  {t:"Your personal brand is the only AI-resistant asset you truly own. Invest in it like compound interest. The returns take time but they become unstoppable.",e:'Episode 15'},
+  {t:"Showing your face on camera is not vanity. It is the fastest trust-building mechanism available to a solo founder. People buy from people. Let them see you.",e:'Episode 17'},
+  {t:"Your legacy is the content that keeps working while you sleep, while you parent, while you rest. Build evergreen assets. Your future self will thank you.",e:'Episode 22'},
+  {t:"A business that serves your life — not the other way around. That is the entire point of CreatingReorganized. If your side-hustle feels like a second job, you haven't reorganized it yet.",e:'Show Philosophy'},
+];
+
+const LV_COLS=['#1558A8','#0B3D7A','#B87E00','#1B7A41','#5D3FD3','#1558A8'];
+const LV_LTS=['#EAF2FB','#D8EAF8','#FFF8E1','#E5F7ED','#F0EBFF','#EAF2FB'];
+const LV_NAMES=['Spark','Shield','Pivot','Flow','Tribe','Owner'];
+
+/* ════ STATE ════ */
+const SK='cr_hero_v4';
+function dfS(){return{
+  lv:1,chk:{},ua:[],goals:[],inc:[],ref:{},monthly:'',vision:'',wins:'',lessons:'',
+  degree:'',uni:'',name:'',modules:[],lvMods:{},
+  canvas:{},shipDone:{},shipCustom:[],ideaLog:[]
+};}
+let S=(()=>{try{return Object.assign(dfS(),JSON.parse(localStorage.getItem(SK)||'{}'));}catch(e){return dfS();}})();
+function sv(){try{localStorage.setItem(SK,JSON.stringify(S));}catch(e){}}
+
+/* ════ HELPERS ════ */
+function getModFor(lvId){
+  if(S.lvMods[lvId]&&S.lvMods[lvId]!==''){return S.lvMods[lvId];}
+  return LVS[lvId-1].defMod;
+}
+function getDegLabel(){
+  const d=DEGREES.find(d=>d.id===S.degree);
+  return d?d.label:'';
+}
+
+/* ════ TABS ════ */
+function sw(el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('panel-'+el.dataset.t).classList.add('active');
+  if(el.dataset.t==='overview')rov();
+  if(el.dataset.t==='reflect')rrf();
+  if(el.dataset.t==='settings')rSettings();
+}
+function swTab(id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.t===id));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id==='panel-'+id));
+  if(id==='overview')rov();
+  if(id==='settings')rSettings();
+}
+
+/* ════ AVATAR ════ */
+function drawAv(n){
+  const svg=document.getElementById('hSvg');
+  const c=LV_COLS[n-1],lt=LV_LTS[n-1];
+  const extras=['',
+    `<rect x="20" y="56" width="38" height="7" rx="3" fill="${c}" opacity=".3"/>`,
+    `<path d="M26 50 L39 40 L52 50" stroke="${c}" stroke-width="2.3" fill="none" stroke-linecap="round"/>`,
+    `<circle cx="18" cy="28" r="5" fill="${c}" opacity=".28"/><circle cx="60" cy="28" r="5" fill="${c}" opacity=".28"/>`,
+    `<circle cx="18" cy="53" r="4" fill="${c}" opacity=".38"/><circle cx="60" cy="53" r="4" fill="${c}" opacity=".38"/><line x1="22" y1="53" x2="56" y2="53" stroke="${c}" stroke-width="1.5" opacity=".38"/>`,
+    `<polygon points="39,12 42,21.5 52.5,21.5 44.2,27.5 47.2,37 39,31 30.8,37 33.8,27.5 25.5,21.5 36,21.5" fill="${c}" opacity=".85"/>`,
+  ];
+  svg.innerHTML=`<circle cx="39" cy="39" r="36" fill="${lt}"/>
+    <circle cx="39" cy="28" r="12" fill="${c}" opacity=".88"/>
+    <ellipse cx="39" cy="57" rx="17" ry="11" fill="${c}" opacity=".72"/>
+    <circle cx="39" cy="28" r="8.5" fill="#fff" opacity=".3"/>
+    <circle cx="35" cy="26" r="2" fill="${c}"/>
+    <circle cx="43" cy="26" r="2" fill="${c}"/>
+    <path d="M35 32 Q39 36 43 32" stroke="${c}" stroke-width="1.7" fill="none" stroke-linecap="round"/>
+    ${extras[n-1]}`;
+}
+
+/* ════ HERO ════ */
+function rHero(){
+  const lv=LVS[S.lv-1];
+  document.getElementById('hT').textContent=`Level ${lv.id} — ${lv.name}`;
+  document.getElementById('hD').textContent=lv.desc;
+  const nm=S.name?S.name+" — ":'';
+  document.getElementById('avN').textContent=nm+lv.avatar;
+  document.getElementById('lN').textContent=lv.id;
+  document.getElementById('mentorQ').textContent=lv.mentor;
+  drawAv(lv.id);
+  const degEl=document.getElementById('degreeDisplay');
+  const dl=getDegLabel();
+  degEl.textContent=dl||(S.uni||'');
+  degEl.style.display=dl||S.uni?'inline-block':'none';
+  const done=lv.ms.filter(m=>S.chk[m.id]).length,tot=lv.ms.length;
+  const pct=Math.round(done/tot*100);
+  document.getElementById('xpF').style.width=pct+'%';
+  document.getElementById('xpL').textContent=`${done} / ${tot} milestones`;
+}
+
+/* ════ LEVELS ════ */
+function rLvls(){
+  document.getElementById('lvlG').innerHTML=LVS.map(lv=>{
+    const done=lpct(lv.id)===100,active=S.lv===lv.id,locked=lv.id>S.lv+1;
+    return`<div class="lc${active?' active':''}${done?' done':''}${locked?' locked':''}" onclick="${locked?'':'selLv('+lv.id+')'}">
+      <div class="lc-n">LEVEL ${lv.id}</div>
+      <div class="lc-nm">${lv.name}</div>
+      <div class="lc-s">${lv.avatar}</div>
+      <div class="lc-b"><div class="lc-bf" style="width:${lpct(lv.id)}%;background:${lv.col}"></div></div>
+    </div>`;
+  }).join('');
+}
+function lpct(id){const lv=LVS[id-1];return Math.round(lv.ms.filter(m=>S.chk[m.id]).length/lv.ms.length*100);}
+function selLv(id){S.lv=id;sv();rHero();rLvls();rDet();rPrm();}
+
+/* ════ DETAIL ════ */
+function rDet(){
+  const lv=LVS[S.lv-1];
+  document.getElementById('ldB').textContent=`Level ${lv.id} — ${lv.name}`;
+  document.getElementById('ldB').style.background=lv.col;
+  document.getElementById('ldF').textContent=getModFor(lv.id);
+  document.getElementById('ldE').textContent=lv.ep;
+  document.getElementById('msL').innerHTML=lv.ms.map(m=>{
+    const done=!!S.chk[m.id];
+    return`<div class="ms${done?' chk':''}" onclick="togMs('${m.id}')">
+      <div class="ms-box">${done?'✓':''}</div>
+      <div class="ms-body"><strong>${m.t}</strong><small>${m.s}</small></div>
+    </div>`;
+  }).join('');
+}
+function togMs(id){
+  S.chk[id]=!S.chk[id];sv();rHero();rLvls();rDet();
+  if(S.lv<6&&lpct(S.lv)===100){S.lv=Math.min(6,S.lv+1);sv();rHero();rLvls();rDet();rPrm();}
+}
+
+/* ════ UA ════ */
+function addUA(){const v=document.getElementById('uaI').value.trim();if(!v)return;S.ua.unshift(v);document.getElementById('uaI').value='';sv();rUA();}
+function rmUA(i){S.ua.splice(i,1);sv();rUA();}
+function rUA(){document.getElementById('uaL').innerHTML=S.ua.map((b,i)=>`<div class="ub">🧠 ${b}<button onclick="rmUA(${i})">×</button></div>`).join('');}
+
+/* ════ GOALS ════ */
+function addGoal(){const v=document.getElementById('gI').value.trim();if(!v)return;S.goals.unshift({t:v,d:false,id:Date.now()});document.getElementById('gI').value='';sv();rGl();}
+function togGoal(id){const g=S.goals.find(g=>g.id===id);if(g)g.d=!g.d;sv();rGl();}
+function rmGoal(id){S.goals=S.goals.filter(g=>g.id!==id);sv();rGl();}
+function rGl(){
+  document.getElementById('gL').innerHTML=S.goals.length?S.goals.map(g=>
+    `<div class="gi${g.d?' done':''}">
+      <input type="checkbox"${g.d?' checked':''} onchange="togGoal(${g.id})"/>
+      <span>${g.t}</span>
+      <button class="dx" onclick="rmGoal(${g.id})">×</button>
+    </div>`
+  ).join(''):'<p class="sm mute" style="padding:.3rem 0;">No goals yet — set your first self-chosen goal above.</p>';
+}
+
+/* ════ REFLECTION ════ */
+function rPrm(){
+  const lv=LVS[S.lv-1];
+  document.getElementById('rPr').textContent=lv.prompt;
+  document.getElementById('rCh').innerHTML=lv.prompts.map(p=>
+    `<button class="chip" onclick="usePrm(this,'${p.replace(/'/g,"&#39;")}')">${p}</button>`
+  ).join('');
+}
+function usePrm(btn,t){document.getElementById('rTx').value=t+'\n\n';document.getElementById('rTx').focus();}
+function saveRef(){S.ref[S.lv]=document.getElementById('rTx').value;sv();fls('rTx');}
+function saveF(k,id){S[k]=document.getElementById(id).value;sv();fls(id);}
+function fls(id){const el=document.getElementById(id);const o=el.style.borderColor;el.style.borderColor='#1B8A4A';setTimeout(()=>{el.style.borderColor=o;},1100);}
+function rrf(){
+  if(S.monthly)document.getElementById('mTx').value=S.monthly;
+  if(S.vision)document.getElementById('vTx').value=S.vision;
+  if(S.ref[S.lv])document.getElementById('rTx').value=S.ref[S.lv];
+}
+
+/* ════ INCOME ════ */
+function addInc(){
+  const desc=document.getElementById('iDesc').value.trim();
+  const amt=parseFloat(document.getElementById('iAmt').value);
+  const dt=document.getElementById('iDt').value||new Date().toISOString().slice(0,10);
+  if(!desc||isNaN(amt)||amt<=0)return;
+  S.inc.unshift({desc,amt,dt,id:Date.now()});
+  document.getElementById('iDesc').value='';document.getElementById('iAmt').value='';
+  sv();rInc();
+  if(S.lv===6&&S.inc.length===1)celebrate();
+}
+function rmInc(id){S.inc=S.inc.filter(i=>i.id!==id);sv();rInc();}
+function rInc(){
+  const tot=S.inc.reduce((a,i)=>a+i.amt,0);
+  document.getElementById('incTot').textContent='€'+tot.toFixed(2);
+  document.getElementById('iL').innerHTML=S.inc.length?S.inc.map(i=>
+    `<div class="ii"><span style="color:var(--mute);font-size:.73rem;">${i.dt}</span>
+     <span style="flex:1;padding:0 .65rem;">${i.desc}</span>
+     <span class="ia">€${i.amt.toFixed(2)}</span>
+     <button class="id-btn" onclick="rmInc(${i.id})">×</button></div>`
+  ).join(''):'<p class="sm mute" style="padding:.3rem 0;">No income logged yet. Your first euro is everything.</p>';
+}
+
+/* ════ CELEBRATE ════ */
+function celebrate(){
+  document.getElementById('fpB').style.display='block';
+  const cv=document.getElementById('cc');cv.style.display='block';
+  const ctx=cv.getContext('2d');cv.width=window.innerWidth;cv.height=window.innerHeight;
+  const ps=[];
+  for(let i=0;i<170;i++)ps.push({x:Math.random()*cv.width,y:Math.random()*cv.height-cv.height,
+    r:Math.random()*6+3,c:['#F5C416','#1558A8','#ffffff','#0B3D7A','#2A7DD4'][Math.floor(Math.random()*5)],
+    d:Math.random()*2.2+1,s:Math.random()*2-1});
+  let f=0;(function draw(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    ps.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,2*Math.PI);ctx.fillStyle=p.c;ctx.fill();p.y+=p.d;p.x+=p.s;});
+    f++;if(f<230)requestAnimationFrame(draw);else{ctx.clearRect(0,0,cv.width,cv.height);cv.style.display='none';}
+  })();
+}
+
+/* ════ EPISODES ════ */
+function rEps(){
+  document.getElementById('epG').innerHTML=EPS.map(ep=>{
+    const num=String(ep.n).padStart(4,'0');
+    const url=`https://postdoctransformation.ac-page.com/creatingreorganized_show${num}`;
+    const c=LV_COLS[ep.lvl-1],lt=LV_LTS[ep.lvl-1];
+    return`<div class="ep">
+      <div class="ep-top"><span class="ep-num">Episode ${ep.n}</span>
+        <span class="ep-lvl" style="background:${lt};color:${c};">Lvl ${ep.lvl}: ${LV_NAMES[ep.lvl-1]}</span></div>
+      <div class="ep-title">${ep.t}</div>
+      <div class="ep-desc">${ep.d}</div>
+      <a class="ep-link" href="${url}" target="_blank">Listen → show${num} ↗</a>
+    </div>`;
+  }).join('');
+}
+
+/* ════ TOOLBOX ════ */
+function rTools(){
+  document.getElementById('tG').innerHTML=TOOLS.map(t=>
+    `<div class="tool">
+      <div class="th"><div class="ti" style="background:${t.bg};color:${t.ic};">${t.icon}</div>
+      <div><div class="tn">${t.n}</div><div class="tc">${t.cat}</div></div></div>
+      <div class="td">${t.d}</div>
+      <a class="tl" href="${t.link}" target="_blank">${t.cta} ↗</a>
+    </div>`
+  ).join('');
+  document.getElementById('aiToolsG').innerHTML=AI_TOOLS.map(t=>
+    `<div class="tool">
+      <div class="th"><div class="ti" style="background:${t.bg};color:${t.ic};">${t.icon}</div>
+      <div><div class="tn">${t.n}</div><div class="tc">${t.cat}</div></div></div>
+      <div class="td">${t.d}</div>
+      <a class="tl" href="${t.link}" target="_blank">${t.cta} ↗</a>
+      <div class="tool-note">ℹ ${t.note}</div>
+    </div>`
+  ).join('');
+}
+
+/* ════ IDEATION LAB ════ */
+function rIdeation(){
+  document.getElementById('ideaGrid').innerHTML=HUSTLE_TYPES.map((h,i)=>
+    `<div class="idea-card${S.hustleType===i?' selected':''}" onclick="selHustle(${i})" style="border-top:3px solid ${h.tcol};">
+      <div class="ic-icon">${h.icon}</div>
+      <div class="ic-name">${h.name}</div>
+      <div class="ic-desc">${h.desc}</div>
+      <span class="ic-tag" style="background:${h.col};color:${h.tcol};">${h.tag}</span>
+    </div>`
+  ).join('');
+  // Restore canvas
+  ['prob','ica','adv','rev','chan','uai'].forEach(k=>{
+    const el=document.getElementById('cv-'+k);
+    if(el&&S.canvas[k])el.value=S.canvas[k];
+  });
+  // Ship checklist
+  rShip();
+  // Idea log
+  rIdeaLog();
+}
+function selHustle(i){S.hustleType=i;sv();
+  document.querySelectorAll('.idea-card').forEach((c,j)=>c.classList.toggle('selected',j===i));
+}
+function saveCanvas(){
+  ['prob','ica','adv','rev','chan','uai'].forEach(k=>{
+    const el=document.getElementById('cv-'+k);if(el)S.canvas[k]=el.value;
+  });sv();fls('cv-prob');
+}
+function exportCanvas(){
+  const lines=['=== CreatingReorganized Business Canvas ===',
+    '','🎯 Problem I solve: '+(S.canvas.prob||''),
+    '👤 Who I serve (ICA): '+(S.canvas.ica||''),
+    '✨ My unique advantage: '+(S.canvas.adv||''),
+    '💰 How I make money: '+(S.canvas.rev||''),
+    '📣 How I reach them: '+(S.canvas.chan||''),
+    '🧠 Un-AI-able edge: '+(S.canvas.uai||''),
+    '','Generated with CreatingReorganized Hero\'s Journey Tracker'];
+  navigator.clipboard.writeText(lines.join('\n')).then(()=>alert('Canvas copied to clipboard!')).catch(()=>{});
+}
+function rShip(){
+  const all=[...DEFAULT_SHIP,...(S.shipCustom||[])];
+  document.getElementById('shipList').innerHTML=all.map((t,i)=>{
+    const done=!!(S.shipDone&&S.shipDone[i]);
+    return`<div class="ship-item${done?' done-s':''}" onclick="togShip(${i})">
+      <div class="ship-box">${done?'✓':''}</div>
+      <span style="font-size:.79rem;">${t}</span>
+    </div>`;
+  }).join('');
+}
+function togShip(i){if(!S.shipDone)S.shipDone={};S.shipDone[i]=!S.shipDone[i];sv();rShip();}
+function addShip(){
+  const v=document.getElementById('shipIn').value.trim();if(!v)return;
+  if(!S.shipCustom)S.shipCustom=[];
+  S.shipCustom.push(v);document.getElementById('shipIn').value='';sv();rShip();
+}
+function addIdea(){
+  const v=document.getElementById('ideaIn').value.trim();if(!v)return;
+  if(!S.ideaLog)S.ideaLog=[];
+  S.ideaLog.unshift({t:v,id:Date.now(),date:new Date().toISOString().slice(0,10)});
+  document.getElementById('ideaIn').value='';sv();rIdeaLog();
+}
+function rmIdea(id){S.ideaLog=S.ideaLog.filter(i=>i.id!==id);sv();rIdeaLog();}
+function rIdeaLog(){
+  const el=document.getElementById('ideaLog');
+  if(!S.ideaLog||S.ideaLog.length===0){el.innerHTML='<p class="sm mute" style="padding:.3rem 0;">No ideas yet. Quantity over quality — log everything.</p>';return;}
+  el.innerHTML=S.ideaLog.map((i,idx)=>
+    `<div class="gi">
+      <span style="color:var(--mute);font-size:.73rem;flex-shrink:0;">#${S.ideaLog.length-idx}</span>
+      <span style="flex:1;">${i.t}</span>
+      <span style="color:var(--mute);font-size:.7rem;">${i.date}</span>
+      <button class="dx" onclick="rmIdea(${i.id})">×</button>
+    </div>`
+  ).join('');
+}
+
+/* ════ OVERVIEW ════ */
+function rov(){
+  const totMs=LVS.reduce((a,lv)=>a+lv.ms.length,0);
+  const dMs=Object.values(S.chk).filter(Boolean).length;
+  const totInc=S.inc.reduce((a,i)=>a+i.amt,0);
+  const lvsDone=LVS.filter(lv=>lpct(lv.id)===100).length;
+  const ideaCount=(S.ideaLog||[]).length;
+  document.getElementById('stG').innerHTML=[
+    {n:S.lv,l:'Current Level'},{n:dMs+'/'+totMs,l:'Milestones Done'},
+    {n:lvsDone+'/6',l:'Levels Complete'},{n:S.ua.length,l:'Un-AI-able Badges'},
+    {n:ideaCount,l:'Ideas Logged'},{n:'€'+totInc.toFixed(0),l:'Income Logged'},
+  ].map(s=>`<div class="st"><div class="st-n">${s.n}</div><div class="st-l">${s.l}</div></div>`).join('');
+
+  document.getElementById('fomT').innerHTML=LVS.map(lv=>`
+    <div style="display:flex;align-items:center;gap:.6rem;padding:.36rem .56rem;background:var(--bg);border-radius:6px;flex-wrap:wrap;">
+      <span style="background:${lv.lt};color:${lv.col};padding:.16rem .5rem;border-radius:4px;font-size:.68rem;font-weight:600;min-width:66px;text-align:center;flex-shrink:0;">Lvl ${lv.id}: ${lv.name}</span>
+      <span style="font-size:.79rem;font-weight:600;">${getModFor(lv.id)}</span>
+      <span style="font-size:.71rem;color:var(--mute);margin-left:auto;">${lv.ep}</span>
+    </div>`).join('');
+
+  if(S.wins)document.getElementById('wTx').value=S.wins;
+  if(S.lessons)document.getElementById('lTx').value=S.lessons;
+}
+
+/* ════ SETTINGS ════ */
+function rSettings(){
+  // Degree picker
+  document.getElementById('degGrid').innerHTML=DEGREES.map(d=>
+    `<button class="deg-btn${S.degree===d.id?' sel':''}" onclick="selDeg('${d.id}')">${d.label}</button>`
+  ).join('');
+  // Uni
+  if(S.uni)document.getElementById('uniIn').value=S.uni;
+  // Name
+  if(S.name)document.getElementById('nameIn').value=S.name;
+  // Modules list
+  rModList();
+  // Level module map
+  rLvlModMap();
+}
+function selDeg(id){S.degree=id;sv();
+  document.querySelectorAll('.deg-btn').forEach(b=>b.classList.toggle('sel',b.textContent===DEGREES.find(d=>d.id===id)?.label));
+  rHero();rDet();
+}
+function saveUni(){S.uni=document.getElementById('uniIn').value;sv();rHero();}
+function saveName(){S.name=document.getElementById('nameIn').value;sv();rHero();}
+function addMod(){
+  const v=document.getElementById('modIn').value.trim();if(!v)return;
+  if(!S.modules)S.modules=[];
+  S.modules.push(v);document.getElementById('modIn').value='';sv();rModList();rLvlModMap();
+}
+function rmMod(i){S.modules.splice(i,1);sv();rModList();rLvlModMap();}
+function rModList(){
+  document.getElementById('modList').innerHTML=(S.modules||[]).length?
+    S.modules.map((m,i)=>`<div class="mod-item"><span style="flex:1;font-size:.79rem;">${m}</span>
+      <button class="del-m" onclick="rmMod(${i})">× Remove</button></div>`).join('')
+    :'<p class="sm mute" style="padding:.3rem 0;">No modules added yet. Add your semester modules above.</p>';
+}
+function rLvlModMap(){
+  const mods=S.modules||[];
+  if(mods.length===0){
+    document.getElementById('lvlModMap').innerHTML='<p class="sm mute">Add at least one module above to start mapping.</p>';return;
+  }
+  document.getElementById('lvlModMap').innerHTML=LVS.map(lv=>`
+    <div class="lmm-row">
+      <span class="lmm-label" style="color:${lv.col};font-size:.76rem;">Lvl ${lv.id}: ${lv.name}</span>
+      <select onchange="saveLvMod(${lv.id},this.value)">
+        <option value="">— Default: ${lv.defMod} —</option>
+        ${mods.map(m=>`<option value="${m}"${S.lvMods[lv.id]===m?' selected':''}>${m}</option>`).join('')}
+      </select>
+    </div>`).join('');
+}
+function saveLvMod(id,val){if(!S.lvMods)S.lvMods={};S.lvMods[id]=val;sv();rDet();}
+
+function resetProgress(){
+  if(!confirm('Reset all progress (milestones, income, reflections, badges)? Module settings will be kept.'))return;
+  const kept={degree:S.degree,uni:S.uni,name:S.name,modules:S.modules,lvMods:S.lvMods};
+  S=Object.assign(dfS(),kept);sv();init();alert('Progress reset. Your academic profile is saved.');}
+function resetAll(){
+  if(!confirm('Reset EVERYTHING including all settings? This cannot be undone.'))return;
+  S=dfS();sv();init();alert('App fully reset.');}
+
+/* ════ QUOTES ════ */
+let qI=0;
+function showQ(){qI=Math.floor(Math.random()*QS.length);rQ();document.getElementById('qOv').classList.add('show');}
+function nxtQ(){qI=(qI+1)%QS.length;rQ();}
+function closeQ(){document.getElementById('qOv').classList.remove('show');}
+function rQ(){const q=QS[qI];document.getElementById('qT').textContent='"'+q.t+'"';document.getElementById('qE').textContent='— Prof. Dr. E, '+q.e;}
+
+/* ════ INIT ════ */
+function init(){
+  rHero();rLvls();rDet();rPrm();rUA();rGl();rInc();rEps();rTools();rIdeation();
+  document.getElementById('iDt').value=new Date().toISOString().slice(0,10);
+  if(S.inc.length>0&&S.lv===6)document.getElementById('fpB').style.display='block';
+}
+init();
+</script>
+</body>
+</html>
