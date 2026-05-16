@@ -66,7 +66,7 @@ It follows the **CreatingReorganized Hero's Journey**: a 6-level progression fro
 | Podbean | Podcast hosting & monetisation | [podbean.com/esw](https://www.podbean.com/esw) |
 | Descript | AI video & audio editing | [get.descript.com/creatingreorganized](https://get.descript.com/creatingreorganized) |
 | Typeform | Lead magnets & feedback | [typeform.cello.so/FxXD1YT3V9z](https://typeform.cello.so/FxXD1YT3V9z) |
-| Thinkific | E-courses & memberships | [get.thinkific.com](https://get.thinkific.com/give-a-month-program/?gam=b1a5dca9a5) |
+| Partnerstack | B2B affiliate marketing | [try.partnerstack.com/creatingreorganized](https://try.partnerstack.com/creatingreorganized)) |
 | ActiveCampaign | Email CRM & automation | [try.activecampaign.com/creatingreorganized](https://try.activecampaign.com/creatingreorganized) |
 | Metricool | Social media scheduling | [s.mtrbio.com/DMOGXJ](https://s.mtrbio.com/DMOGXJ) |
 
