@@ -458,6 +458,48 @@ select{cursor:pointer;}
   white-space:pre-wrap;font-style:italic;margin-bottom:.65rem;
 }
 
+
+/* ── EPISODE LISTENING SYSTEM ── */
+.ep-listen-row{display:flex;align-items:center;gap:.5rem;margin-top:.55rem;flex-wrap:wrap;}
+.ep-check-btn{display:flex;align-items:center;gap:.32rem;background:var(--bg);
+  border:1.5px solid var(--bdr);border-radius:6px;padding:.28rem .65rem;
+  font-size:.72rem;font-weight:600;color:var(--mute);cursor:pointer;transition:all .18s;}
+.ep-check-btn.listened{background:var(--green-lt);border-color:var(--green);color:var(--green);}
+.ep-quote-btn{display:flex;align-items:center;gap:.28rem;background:var(--yel-lt);
+  border:1.5px solid var(--yel-md);border-radius:6px;padding:.28rem .65rem;
+  font-size:.72rem;font-weight:600;color:var(--yel-dk);cursor:pointer;transition:all .18s;}
+.ep-quote-btn:hover{background:var(--yel-md);color:#fff;}
+.ep-voice{background:var(--blue-lt);border-left:3px solid var(--blue);
+  border-radius:0 6px 6px 0;padding:.45rem .65rem;margin-top:.45rem;
+  font-size:.72rem;font-style:italic;color:var(--blue-dk);line-height:1.45;}
+.ep-voice-author{font-size:.65rem;color:var(--mute);margin-top:.18rem;font-style:normal;font-weight:600;}
+.ep-progress-bar{height:3px;background:var(--bdr);border-radius:2px;margin-top:.5rem;overflow:hidden;}
+.ep-progress-fill{height:100%;background:var(--green);border-radius:2px;transition:width .4s;}
+
+/* ── STUDENT VOICES SECTION ── */
+.sv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:.75rem;margin-bottom:1.1rem;}
+.sv-card{background:var(--surf);border:1.5px solid var(--bdr);border-radius:var(--r);padding:.9rem;}
+.sv-ep{font-size:.65rem;font-weight:700;color:var(--blue);text-transform:uppercase;
+  letter-spacing:.4px;margin-bottom:.3rem;}
+.sv-quote{font-size:.8rem;font-style:italic;color:var(--txt);line-height:1.5;margin-bottom:.35rem;}
+.sv-meta{font-size:.67rem;color:var(--mute);}
+
+/* ── EPISODE QUOTE CARD MODAL ── */
+.eq-overlay{position:fixed;inset:0;background:rgba(8,25,55,.72);z-index:850;
+  display:none;align-items:center;justify-content:center;padding:1rem;overflow-y:auto;}
+.eq-overlay.show{display:flex;}
+.eq-box{background:var(--surf);border-radius:var(--r);padding:1.5rem;
+  max-width:520px;width:100%;box-shadow:var(--sh);margin:auto;}
+.eq-title{font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:800;
+  color:var(--blue-dk);margin-bottom:.25rem;}
+.eq-ep-ref{font-size:.72rem;color:var(--mute);margin-bottom:.85rem;}
+.eq-consent{display:flex;align-items:flex-start;gap:.5rem;margin:.75rem 0;
+  padding:.6rem;background:var(--bg);border-radius:var(--r-sm);}
+.eq-consent input{width:16px;height:16px;flex-shrink:0;margin-top:1px;}
+.eq-consent label{font-size:.76rem;color:var(--txt);line-height:1.45;cursor:pointer;}
+.eq-canvas-wrap{text-align:center;margin:.75rem 0;}
+.eq-share-row{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.65rem;}
+
 </style>
 </head>
 <body>
@@ -480,6 +522,41 @@ select{cursor:pointer;}
       <button class="btn btn-g" onclick="swTab('settings');closeOnboarding()">⚙ Open Settings</button>
     </div>
     <p style="font-size:.68rem;color:var(--mute);text-align:center;margin-top:.75rem;">This guide appears until all 4 steps are complete.</p>
+  </div>
+</div>
+
+
+<!-- EPISODE QUOTE CARD MODAL -->
+<div class="eq-overlay" id="eqOverlay">
+  <div class="eq-box">
+    <div class="eq-title" id="eqModalTitle">Share what helped you most</div>
+    <div class="eq-ep-ref" id="eqModalEpRef">Episode X</div>
+
+    <div class="rl" style="margin-bottom:.4rem;">Your insight</div>
+    <textarea id="eqQuoteText" rows="4" placeholder="e.g. The Zeigarnik Effect example finally explained why my audience kept asking for more. I redesigned my lead magnet that same evening." style="margin-bottom:.6rem;"></textarea>
+
+    <div class="eq-consent">
+      <input type="checkbox" id="eqConsent" checked/>
+      <label for="eqConsent">I'm happy for Prof. Dr. E to share this insight anonymously to inspire other students. No name will ever be attached.</label>
+    </div>
+
+    <div class="eq-canvas-wrap">
+      <canvas id="eqCanvas" style="max-width:100%;border-radius:8px;border:1px solid var(--bdr);display:none;"></canvas>
+    </div>
+
+    <div style="display:flex;gap:.45rem;flex-wrap:wrap;margin-bottom:.65rem;">
+      <button class="btn btn-sm" onclick="generateEqCard()">🎨 Generate Share Card</button>
+      <button class="btn btn-sm btn-y" onclick="saveEqVoice()">💾 Save My Insight</button>
+      <button class="btn btn-g btn-sm" onclick="closeEqModal()">Cancel</button>
+    </div>
+
+    <div class="eq-share-row" id="eqShareRow" style="display:none;">
+      <button class="sh-btn dl-btn" onclick="downloadEqCard()">💾 Download Card</button>
+      <button class="sh-btn" style="background:#1e3d6e;color:#fff;" onclick="emailEqCard()">✉️ Send to Prof. Dr. E</button>
+      <button class="sh-btn li" onclick="shareEqLinkedIn()">💼 LinkedIn</button>
+      <button class="sh-btn ig" onclick="shareEqInstagram()">📸 Instagram</button>
+    </div>
+    <p class="sm mute" style="margin-top:.5rem;font-size:.68rem;">Sending to Prof. Dr. E opens your email app with the card link and your insight pre-filled. She reads every one. 💛</p>
   </div>
 </div>
 
@@ -717,6 +794,10 @@ select{cursor:pointer;}
   <div class="sec">🎙 All 24 CreatingReorganized Episodes</div>
   <p class="sm mute mb1">Every episode maps to a level of your Hero Journey. All are published and live.</p>
   <div class="eg" id="epG"></div>
+
+  <div class="sec" style="margin-top:1.2rem;">💬 Student Voices — What helped most</div>
+  <p class="sm mute mb1">Real insights from students on each episode. Add yours by clicking "Share what helped me" on any episode card above.</p>
+  <div id="studentVoicesSection"></div>
 </div>
 
 <!-- ════ INCOME ════ -->
@@ -1097,6 +1178,7 @@ const LV_NAMES=['Spark','Shield','Pivot','Flow','Tribe','Owner'];
 const SK='cr_hero_v4';
 function dfS(){return{
   lv:1,chk:{},ua:[],goals:[],inc:[],ref:{},monthly:'',vision:'',wins:'',lessons:'',questionsForE:'',
+  epListened:{},epMyVoices:{},epShared:{},
   degree:'',uni:'',name:'',modules:[],lvMods:{},
   canvas:{},shipDone:{},shipCustom:[],ideaLog:[]
 };}
@@ -1121,6 +1203,7 @@ function sw(el){
   document.getElementById('panel-'+el.dataset.t).classList.add('active');
   if(el.dataset.t==='overview')rov();
   if(el.dataset.t==='moments')rMoments();
+  if(el.dataset.t==='episodes'){rEps();}
   if(el.dataset.t==='reflect')rrf();
   if(el.dataset.t==='settings')rSettings();
 }
@@ -1285,20 +1368,141 @@ function celebrate(){
 }
 
 /* ════ EPISODES ════ */
+const SEEDED_VOICES = [
+  // Episode 1
+  "This episode made me realise my degree IS my moat. Nobody can replicate three years of my lived experience in two prompts.",
+  // Episode 2
+  "I never thought about qualifying leads before. I was giving free advice to everyone. Now I ask three questions first. Game changer.",
+  // Episode 3
+  "The behind-the-scenes storytelling idea was huge for me. I started sharing my revision process on LinkedIn and got my first DM from a potential client.",
+  // Episode 4
+  "Batch recording during semester breaks changed everything. I did four episodes in one Sunday. No more guilt about posting gaps.",
+  // Episode 5
+  "I repurposed one episode into five social posts using the framework here. My first post hit 800 views. I nearly cried.",
+  // Episode 6
+  "The Zeigarnik Effect example finally explained why my audience kept asking for more. I redesigned my lead magnet that same evening.",
+  // Episode 7
+  "Using the scarcity principle felt manipulative until Prof. Dr. E explained the psychology. Now I understand it's about respecting people's time.",
+  // Episode 8
+  "I mapped my first sales funnel on a napkin after this episode. Three weeks later my first paying client came through exactly that path.",
+  // Episode 9
+  "I was burning out before I found this episode. The batching system gave me back my weekends without stopping my content.",
+  // Episode 10
+  "I was measuring downloads. This episode taught me to measure trust conversations. Completely different metric. Completely different results.",
+  // Episode 11
+  "I tested my coaching idea with a free 20-minute call offer. Five people said yes in 48 hours. That was my market validation.",
+  // Episode 12
+  "The supply chain metaphor clicked for me instantly. I drew my content pipeline on a whiteboard and saw three gaps I was ignoring.",
+  // Episode 13
+  "Availability heuristics! That's why the professors who post consistently get chosen for panels. I started posting weekly after this.",
+  // Episode 14
+  "I set my first content boundary after this episode. No recording after 9pm. My quality went up immediately.",
+  // Episode 15
+  "My point of view is my AI-resistant asset. I wrote it down in one sentence for the first time. It took 45 minutes and was worth every second.",
+  // Episode 16
+  "I set up my first ActiveCampaign sequence after this episode. It sent while I was in a three-hour lecture. Magic.",
+  // Episode 17
+  "I was hiding behind slides and text posts. This episode pushed me to turn my camera on. My engagement tripled in two weeks.",
+  // Episode 18
+  "I'm German-Turkish and never thought my bilingual background was a business asset. After this episode I created content in both languages. My Turkish audience found me within days.",
+  // Episode 19
+  "One episode became a LinkedIn post, three Instagram slides, a TikTok clip and a newsletter section. I stopped thinking about content and started thinking about systems.",
+  // Episode 20
+  "My podcast analytics showed 80% of listeners dropped off at minute seven. I restructured every future episode around that insight.",
+  // Episode 21
+  "Evergreen content is a pension fund. I understood that metaphor completely after this episode and stopped chasing trends.",
+  // Episode 22
+  "I packaged my thesis research into a mini e-course on Thinkific over one weekend. It sold to three people before I even launched it properly.",
+  // Episode 23
+  "I listed every person in my ecosystem — suppliers, clients, collaborators. I had 23 names. I had no idea I already had a network.",
+  // Episode 24
+  "I finished all 24 episodes and I am not the same person who started Episode 1. My business exists. My first client paid me. I am future-proof.",
+];
+
+
 function rEps(){
-  document.getElementById('epG').innerHTML=EPS.map(ep=>{
+  const listenedCount = Object.values(S.epListened||{}).filter(Boolean).length;
+  const pct = Math.round(listenedCount/EPS.length*100);
+  // Build header with progress
+  const header = `<div style="background:var(--surf);border:1.5px solid var(--bdr);border-radius:var(--r);padding:.9rem;margin-bottom:1rem;">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;">
+      <div>
+        <div style="font-size:.82rem;font-weight:700;color:var(--txt);">Your Listening Progress</div>
+        <div style="font-size:.72rem;color:var(--mute);">${listenedCount} of ${EPS.length} episodes listened</div>
+      </div>
+      <div style="font-size:1.4rem;font-family:'Syne',sans-serif;font-weight:800;color:var(--blue-dk);">${pct}%</div>
+    </div>
+    <div class="ep-progress-bar" style="margin-top:.55rem;"><div class="ep-progress-fill" style="width:${pct}%"></div></div>
+  </div>`;
+
+  const cards = EPS.map(ep=>{
     const num=String(ep.n).padStart(4,'0');
     const url=`https://postdoctransformation.ac-page.com/creatingreorganized_show${num}`;
     const c=LV_COLS[ep.lvl-1],lt=LV_LTS[ep.lvl-1];
-    return`<div class="ep">
-      <div class="ep-top"><span class="ep-num">Episode ${ep.n}</span>
-        <span class="ep-lvl" style="background:${lt};color:${c};">Lvl ${ep.lvl}: ${LV_NAMES[ep.lvl-1]}</span></div>
+    const listened = !!(S.epListened && S.epListened[ep.n]);
+    const myVoice = S.epMyVoices && S.epMyVoices[ep.n] ? S.epMyVoices[ep.n] : '';
+    const seededVoice = SEEDED_VOICES[ep.n-1] || '';
+    // Show either student's own voice or seeded voice
+    const displayVoice = myVoice || seededVoice;
+    const isOwn = !!myVoice;
+    return `<div class="ep" id="ep-card-${ep.n}">
+      <div class="ep-top">
+        <span class="ep-num">Episode ${ep.n}</span>
+        <span class="ep-lvl" style="background:${lt};color:${c};">Lvl ${ep.lvl}: ${LV_NAMES[ep.lvl-1]}</span>
+      </div>
       <div class="ep-title">${ep.t}</div>
       <div class="ep-desc">${ep.d}</div>
       <a class="ep-link" href="${url}" target="_blank">Listen → show${num} ↗</a>
+      <div class="ep-listen-row">
+        <button class="ep-check-btn${listened?' listened':''}" onclick="togListen(${ep.n})">
+          ${listened?'✅ Listened':'⬜ Mark as listened'}
+        </button>
+        <button class="ep-quote-btn" onclick="openEqModal(${ep.n})">
+          ✍️ ${myVoice?'Edit my insight':'Share what helped me'}
+        </button>
+      </div>
+      ${displayVoice ? `<div class="ep-voice">
+        "${displayVoice}"
+        <div class="ep-voice-author">${isOwn ? '💛 Your insight' : '💬 Student voice'}</div>
+      </div>` : ''}
     </div>`;
   }).join('');
+
+  // Student Voices section - only show episodes where students shared insights
+  const myVoicesHtml = buildStudentVoicesSection();
+
+  document.getElementById('epG').innerHTML = header + cards;
+  const svEl = document.getElementById('studentVoicesSection');
+  if(svEl) svEl.innerHTML = myVoicesHtml;
 }
+
+function buildStudentVoicesSection(){
+  // Collect all episodes with student voices (own first, then seeded)
+  const voices = EPS.map(ep => {
+    const own = S.epMyVoices && S.epMyVoices[ep.n];
+    const seeded = SEEDED_VOICES[ep.n-1];
+    return {ep, voice: own||seeded, isOwn:!!own};
+  }).filter(v => v.voice);
+
+  if(!voices.length) return '<p class="sm mute">No student voices yet — be the first to share what helped you!</p>';
+
+  return `<div class="sv-grid">${voices.map(v=>{
+    return `<div class="sv-card">
+      <div class="sv-ep">Episode ${v.ep.n} — ${v.ep.t.slice(0,40)}${v.ep.t.length>40?'…':''}</div>
+      <div class="sv-quote">"${v.voice}"</div>
+      <div class="sv-meta">${v.isOwn ? '💛 Your insight' : '💬 Student voice'}</div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function togListen(epNum){
+  if(!S.epListened) S.epListened={};
+  S.epListened[epNum] = !S.epListened[epNum];
+  sv(); rEps();
+  // Check if all 24 listened
+  if(Object.values(S.epListened).filter(Boolean).length===24) levelConfetti(6);
+}
+
 
 /* ════ TOOLBOX ════ */
 function rTools(){
@@ -2021,6 +2225,225 @@ initDarkMode();
 updateStreak();
 init();
 showOnboarding();
+
+/* ════ EPISODE QUOTE CARD SYSTEM ════ */
+let currentEqEp = null;
+
+function openEqModal(epNum) {
+  currentEqEp = EPS.find(e => e.n === epNum);
+  if (!currentEqEp) return;
+  document.getElementById('eqModalTitle').textContent = 'What helped you most in Episode ' + epNum + '?';
+  document.getElementById('eqModalEpRef').textContent = 'Episode ' + epNum + ' — ' + currentEqEp.t;
+  // Pre-fill with saved voice if exists
+  const saved = S.epMyVoices && S.epMyVoices[epNum] ? S.epMyVoices[epNum] : '';
+  document.getElementById('eqQuoteText').value = saved;
+  // Hide share row until card generated
+  document.getElementById('eqShareRow').style.display = 'none';
+  const cv = document.getElementById('eqCanvas');
+  if (cv) cv.style.display = 'none';
+  document.getElementById('eqOverlay').classList.add('show');
+}
+
+function closeEqModal() {
+  document.getElementById('eqOverlay').classList.remove('show');
+  currentEqEp = null;
+}
+
+function saveEqVoice() {
+  if (!currentEqEp) return;
+  const text = document.getElementById('eqQuoteText').value.trim();
+  if (!text) return;
+  if (!S.epMyVoices) S.epMyVoices = {};
+  S.epMyVoices[currentEqEp.n] = text;
+  sv();
+  rEps(); // refresh episode cards
+  closeEqModal();
+}
+
+function generateEqCard() {
+  const text = document.getElementById('eqQuoteText').value.trim();
+  if (!text || !currentEqEp) {
+    alert('Please write your insight first!');
+    return;
+  }
+  drawEqCanvas(text);
+  document.getElementById('eqShareRow').style.display = 'flex';
+}
+
+function drawEqCanvas(quoteText) {
+  const cv = document.getElementById('eqCanvas');
+  if (!cv || !currentEqEp) return;
+  // Use portrait 4:5 format for Instagram
+  const W = 1080, H = 1350;
+  cv.width = W; cv.height = H;
+  // Display size
+  cv.style.display = 'block';
+  cv.style.width = '280px';
+  cv.style.height = '350px';
+
+  const ctx = cv.getContext('2d');
+  const ep = currentEqEp;
+  const lv = LVS[ep.lvl - 1];
+
+  // Background gradient using level colour
+  const grad = ctx.createLinearGradient(0, 0, W, H);
+  grad.addColorStop(0, '#1e3d6e');
+  grad.addColorStop(0.6, '#335f9f');
+  grad.addColorStop(1, lv.col || '#335f9f');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Decorative circles
+  ctx.globalAlpha = 0.07;
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.arc(W * 0.85, H * 0.08, W * 0.3, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(W * 0.08, H * 0.92, W * 0.25, 0, Math.PI*2); ctx.fill();
+  ctx.globalAlpha = 1;
+
+  // Amber underline at bottom
+  ctx.fillStyle = '#e9b25d';
+  ctx.fillRect(0, H - 80, W, 10);
+
+  // Load and draw logo
+  const logoImg = new Image();
+  logoImg.onload = () => {
+    // Logo top centre
+    const lSize = 110;
+    ctx.drawImage(logoImg, (W - lSize)/2, 60, lSize, lSize);
+
+    // "CreatingReorganized" under logo
+    ctx.fillStyle = 'rgba(255,255,255,0.88)';
+    ctx.font = `bold ${Math.round(W*0.038)}px Arial, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText('CreatingReorganized', W/2, 200);
+
+    // Episode badge pill
+    const epNum = String(ep.n).padStart(4, '0');
+    const epUrl = 'postdoctransformation.ac-page.com/creatingreorganized_show' + epNum;
+    ctx.fillStyle = 'rgba(233,178,93,0.22)';
+    roundRectFill(ctx, W*0.12, 228, W*0.76, 72, 16);
+    ctx.fillStyle = '#e9b25d';
+    ctx.font = `bold ${Math.round(W*0.034)}px Arial, sans-serif`;
+    ctx.fillText('Episode ' + ep.n, W/2, 262);
+    ctx.fillStyle = 'rgba(255,255,255,0.65)';
+    ctx.font = `${Math.round(W*0.022)}px Arial, sans-serif`;
+    ctx.fillText(epUrl, W/2, 290);
+
+    // Quote text - large centred
+    ctx.fillStyle = '#fff';
+    ctx.font = `bold ${Math.round(W*0.052)}px Arial, sans-serif`;
+    wrapTextCentered(ctx, '"' + quoteText + '"', W/2, 400, W*0.78, Math.round(W*0.072), H*0.52);
+
+    // Divider
+    ctx.strokeStyle = 'rgba(233,178,93,0.4)';
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(W*0.15, H*0.78); ctx.lineTo(W*0.85, H*0.78); ctx.stroke();
+
+    // Hashtag
+    ctx.fillStyle = '#e9b25d';
+    ctx.font = `bold ${Math.round(W*0.032)}px Arial, sans-serif`;
+    ctx.fillText('#CreatingReorganized_StudentTracker', W/2, H*0.82);
+
+    // Tag line
+    ctx.fillStyle = 'rgba(255,255,255,0.65)';
+    ctx.font = `${Math.round(W*0.024)}px Arial, sans-serif`;
+    ctx.fillText('Tag @postdoctransformation · @profdreleonore', W/2, H*0.858);
+
+    // Send to E line
+    ctx.fillStyle = 'rgba(233,178,93,0.75)';
+    ctx.font = `${Math.round(W*0.022)}px Arial, sans-serif`;
+    ctx.fillText('Send your insight → eleonore@postdoctransformation.com', W/2, H*0.888);
+
+    // Bottom URL
+    ctx.fillStyle = 'rgba(255,255,255,0.45)';
+    ctx.font = `${Math.round(W*0.02)}px Arial, sans-serif`;
+    ctx.fillText('postdoctransformation.ac-page.com/creatingreorganized', W/2, H - 40);
+  };
+  logoImg.src = 'data:image/png;base64,' + LOGO_B64;
+}
+
+function roundRectFill(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y);
+  ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);
+  ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h);
+  ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r);
+  ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();
+  ctx.fill();
+}
+
+function wrapTextCentered(ctx, text, x, startY, maxW, lineH, maxY) {
+  const words = text.split(' ');
+  let line = '';
+  let y = startY;
+  for (let i = 0; i < words.length; i++) {
+    const test = line + words[i] + ' ';
+    if (ctx.measureText(test).width > maxW && i > 0) {
+      if (y < maxY) { ctx.fillText(line.trim(), x, y); }
+      line = words[i] + ' ';
+      y += lineH;
+    } else { line = test; }
+  }
+  if (y < maxY) ctx.fillText(line.trim(), x, y);
+}
+
+function getEqCaption() {
+  if (!currentEqEp) return '';
+  const text = document.getElementById('eqQuoteText').value.trim();
+  const epNum = String(currentEqEp.n).padStart(4,'0');
+  const epUrl = 'https://postdoctransformation.ac-page.com/creatingreorganized_show' + epNum;
+  return `"${text}"\n\n— My insight from Episode ${currentEqEp.n} of the CreatingReorganized show by Prof. Dr. Eleonore Soei-Winkels\n\n▶ ${epUrl}\n\n#CreatingReorganized_StudentTracker #SideHustle #EmpowermentArchitecture\n\ncc @postdoctransformation @profdreleonore 💛`;
+}
+
+function downloadEqCard() {
+  const cv = document.getElementById('eqCanvas');
+  if (!cv) return;
+  const dataUrl = cv.toDataURL('image/png');
+  const fname = 'CreatingReorganized_Episode' + (currentEqEp ? currentEqEp.n : 'X') + '_insight.png';
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  if (isMobile) {
+    const win = window.open();
+    if (win) {
+      win.document.write('<html><head><title>' + fname + '</title><meta name="viewport" content="width=device-width,initial-scale=1"/></head><body style="margin:0;background:#111827;display:flex;flex-direction:column;align-items:center;padding:1.5rem;min-height:100vh;"><img src="' + dataUrl + '" style="max-width:100%;border-radius:12px;"/><p style="color:#e9b25d;font-family:sans-serif;font-size:16px;margin-top:20px;text-align:center;"><strong>Long-press the image</strong><br/>then tap Save to Photos &#128190;</p></body></html>');
+      win.document.close();
+    }
+  } else {
+    const a = document.createElement('a'); a.download = fname; a.href = dataUrl; a.click();
+  }
+}
+
+function emailEqCard() {
+  if (!currentEqEp) return;
+  const text = document.getElementById('eqQuoteText').value.trim();
+  const consent = document.getElementById('eqConsent').checked;
+  const epNum = String(currentEqEp.n).padStart(4,'0');
+  const subject = encodeURIComponent('Episode ' + currentEqEp.n + ' insight — CreatingReorganized_StudentTracker');
+  const body = encodeURIComponent(
+    'Hi Prof. Dr. E! 👋\n\nHere is my insight from Episode ' + currentEqEp.n + ':\n\n"' + text + '"\n\n' +
+    (consent ? 'You may share this anonymously to inspire other students. 💛\n\n' : 'Please keep this private.\n\n') +
+    'Episode: https://postdoctransformation.ac-page.com/creatingreorganized_show' + epNum + '\n\n' +
+    '#CreatingReorganized_StudentTracker'
+  );
+  window.location.href = 'mailto:eleonore@postdoctransformation.com?subject=' + subject + '&body=' + body;
+}
+
+function shareEqLinkedIn() {
+  const epUrl = encodeURIComponent('https://postdoctransformation.ac-page.com/creatingreorganized_show' + String(currentEqEp.n).padStart(4,'0'));
+  window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + epUrl, '_blank');
+}
+
+function shareEqInstagram() {
+  navigator.clipboard.writeText(getEqCaption()).catch(()=>{});
+  setTimeout(()=>{
+    alert('Caption copied! 📋\n\nDownload the card first, then open Instagram and paste your caption.');
+    window.open('https://www.instagram.com','_blank');
+  }, 200);
+}
+
 </script>
 </body>
 </html>
