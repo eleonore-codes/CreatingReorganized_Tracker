@@ -1507,7 +1507,7 @@ select{cursor:pointer;}
   </div>
 
   <!-- STUDENT INFO -->
-  <div class="pr-section" style="background:var(--bg);border-radius:10px;padding:1.2rem;margin-bottom:1.2rem;">
+  <div class="pr-section" style="background:#F0F4F8;border:1.5px solid #D5E2F0;border-radius:10px;padding:1.2rem;margin-bottom:1.2rem;">
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.75rem;">
       <div><div style="font-size:.68rem;font-weight:700;color:#4A5568;text-transform:uppercase;letter-spacing:.4px;">Student</div><div style="font-weight:700;font-size:.95rem;" id="pr-name">—</div></div>
       <div><div style="font-size:.68rem;font-weight:700;color:#4A5568;text-transform:uppercase;letter-spacing:.4px;">Degree</div><div style="font-weight:700;font-size:.95rem;" id="pr-degree">—</div></div>
@@ -1566,7 +1566,7 @@ select{cursor:pointer;}
       <div>🎉 <strong>Events:</strong> <a href="https://postdoctransformation.ac-page.com/creatingreorganized_events">Season parties &amp; workshops</a></div>
     </div>
     <div style="margin-top:.85rem;padding-top:.75rem;border-top:1px solid #d9a040;">
-      <div style="font-size:.78rem;font-weight:700;color:var(--blue-dk);margin-bottom:.45rem;">🛠 Founder's Toolbox — Affiliate Partners</div>
+      <div style="font-size:.78rem;font-weight:700;color:#1e3d6e;margin-bottom:.45rem;">🛠 Founder's Toolbox — Affiliate Partners</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.35rem;font-size:.77rem;">
         <div>🎙 <a href="https://www.podbean.com/esw">Podbean — Podcast Hosting</a></div>
         <div>✂️ <a href="https://get.descript.com/creatingreorganized">Descript — AI Video Editing</a></div>
@@ -1577,7 +1577,7 @@ select{cursor:pointer;}
       </div>
     </div>
     <div style="margin-top:.85rem;padding-top:.75rem;border-top:1px solid #d9a040;">
-      <div style="font-size:.78rem;font-weight:700;color:var(--blue-dk);margin-bottom:.35rem;">🤝 Work With Prof. Dr. E</div>
+      <div style="font-size:.78rem;font-weight:700;color:#1e3d6e;margin-bottom:.35rem;">🤝 Work With Prof. Dr. E</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.35rem;font-size:.77rem;">
         <div>🤝 <a href="https://postdoctransformation.activehosted.com/f/30">Become a Sponsor</a></div>
         <div>🏷 <a href="https://postdoctransformation.activehosted.com/f/28">White Label Consulting</a></div>
@@ -1591,9 +1591,9 @@ select{cursor:pointer;}
     CreatingReorganized · Empowerment Architecture Protocol · #CreatingReorganized_StudentTracker
   </div>
   <div style="text-align:center;padding:1rem;border-top:3px solid #e9b25d;margin-top:1rem;">
-    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:.95rem;color:var(--blue-dk);">CreatingReorganized — Empowerment Architecture Protocol</div>
-    <div style="font-size:.72rem;color:var(--mute);margin-top:.2rem;">Prof. Dr. Eleonore Soei-Winkels · eleonore@postdoctransformation.com</div>
-    <div style="font-size:.68rem;color:var(--mute);margin-top:.15rem;">#CreatingReorganized_StudentTracker</div>
+    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:.95rem;color:#1e3d6e;">CreatingReorganized — Empowerment Architecture Protocol</div>
+    <div style="font-size:.72rem;color:#4A5568;margin-top:.2rem;">Prof. Dr. Eleonore Soei-Winkels · eleonore@postdoctransformation.com</div>
+    <div style="font-size:.68rem;color:#4A5568;margin-top:.15rem;">#CreatingReorganized_StudentTracker</div>
   </div>
 </div>
 
@@ -3221,7 +3221,7 @@ function populatePdfReport() {
     {n: '€' + totalInc.toFixed(2), l: 'Income Logged'},
     {n: (S.ua || []).length, l: 'Un-AI-able Badges'},
     {n: listenedCount + '/24', l: 'Episodes Heard'},
-  ].map(s => `<div style="background:var(--bg);border-radius:8px;padding:.75rem;text-align:center;">
+  ].map(s => `<div style="background:#F0F4F8;border:1.5px solid #D5E2F0;border-radius:8px;padding:.75rem;text-align:center;">
     <div style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;color:var(--blue-dk);">${s.n}</div>
     <div style="font-size:.65rem;color:var(--mute);font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-top:.15rem;">${s.l}</div>
   </div>`).join('');
@@ -3238,7 +3238,7 @@ function populatePdfReport() {
           Level ${lv.id}: ${lv.name} (${done.length}/${lv.ms.length} complete)
         </div>`;
       done.forEach(m => {
-        msHtml += `<div style="display:flex;gap:.5rem;align-items:flex-start;padding:.3rem 0;border-bottom:1px solid #eaf0f8;">
+        msHtml += `<div style="display:flex;gap:.5rem;align-items:flex-start;padding:.35rem .5rem;border-bottom:1px solid #D5E2F0;color:#16243A;">
           <span style="color:var(--green);font-weight:700;flex-shrink:0;">✓</span>
           <span style="font-size:.8rem;">${m.t}</span>
         </div>`;
@@ -3256,12 +3256,12 @@ function populatePdfReport() {
     } else {
       const total = S.inc.reduce((a, i) => a + i.amt, 0);
       prInc.innerHTML = S.inc.map(i =>
-        `<div style="display:flex;justify-content:space-between;align-items:center;padding:.35rem 0;border-bottom:1px solid #eaf0f8;font-size:.8rem;">
+        `<div style="display:flex;justify-content:space-between;align-items:center;padding:.35rem .5rem;border-bottom:1px solid #D5E2F0;font-size:.8rem;color:#16243A;">
           <span style="color:var(--mute);font-size:.72rem;">${i.dt}</span>
           <span style="flex:1;padding:0 .75rem;">${i.desc}</span>
           <span style="font-weight:700;color:var(--green);">€${i.amt.toFixed(2)}</span>
         </div>`
-      ).join('') + `<div style="display:flex;justify-content:flex-end;padding:.5rem 0;font-weight:800;font-size:.9rem;color:var(--blue-dk);">Total: €${total.toFixed(2)}</div>`;
+      ).join('') + `<div style="display:flex;justify-content:flex-end;padding:.5rem 0;font-weight:800;font-size:.9rem;color:#335f9f;">Total: €${total.toFixed(2)}</div>`;
     }
   }
 
@@ -3281,7 +3281,7 @@ function populatePdfReport() {
     const doneGoals = (S.goals || []).filter(g => g.d);
     if (doneGoals.length > 0) {
       refHtml += `<div style="margin-bottom:.65rem;"><strong style="font-size:.76rem;color:var(--blue);">Completed Goals (${doneGoals.length}):</strong>`;
-      doneGoals.forEach(g => { refHtml += `<div style="font-size:.8rem;padding:.2rem 0;">✅ ${g.t}</div>`; });
+      doneGoals.forEach(g => { refHtml += `<div style="font-size:.8rem;padding:.2rem 0;color:#16243A;">✅ ${g.t}</div>`; });
       refHtml += '</div>';
     }
     if (S.questionsForE) refHtml += `<div style="margin-bottom:.65rem;"><strong style="font-size:.76rem;color:var(--blue);">Questions for Prof. Dr. E:</strong><p style="font-size:.8rem;margin-top:.2rem;">${S.questionsForE}</p></div>`;
@@ -3304,10 +3304,10 @@ function populatePdfReport() {
   const prMods = document.getElementById('pr-modules');
   if (prMods) {
     prMods.innerHTML = LVS.map(lv =>
-      `<div style="display:flex;align-items:center;gap:.65rem;padding:.38rem .5rem;background:var(--bg);border-radius:6px;margin-bottom:.3rem;font-size:.8rem;">
+      `<div style="display:flex;align-items:center;gap:.65rem;padding:.38rem .6rem;background:#F0F4F8;border-radius:6px;margin-bottom:.3rem;font-size:.8rem;color:#16243A;">
         <span style="background:var(--blue-lt);color:var(--blue);padding:.15rem .5rem;border-radius:4px;font-size:.68rem;font-weight:600;min-width:68px;text-align:center;flex-shrink:0;">Lvl ${lv.id}: ${lv.name}</span>
         <span style="font-weight:600;">${getModFor(lv.id)}</span>
-        <span style="color:var(--mute);margin-left:auto;font-size:.72rem;">${lv.ep}</span>
+        <span style="color:#4A5568;margin-left:auto;font-size:.72rem;">${lv.ep}</span>
       </div>`
     ).join('');
   }
