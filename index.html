@@ -3323,7 +3323,7 @@ function sendReportByEmail(email) {
     const done = lv.ms.filter(m => S.chk && S.chk[m.id]);
     if (done.length > 0) {
       msText += `Level ${lv.id} — ${lv.name} (${done.length}/${lv.ms.length}):\n`;
-      done.forEach(m => { msText += `  ✓ ${m.t}\n`; });
+      done.forEach(m => { msText += '  ✓ ' + m.t + '\n'; });
       msText += '\n';
     }
   });
@@ -3332,26 +3332,26 @@ function sendReportByEmail(email) {
   let incText = S.inc && S.inc.length > 0
     ? S.inc.map(i => `  ${i.dt}: ${i.desc} — €${i.amt.toFixed(2)}`).join('\n')
     : 'No income logged yet.';
-  const incTotal = totalInc > 0 ? `\nTotal: €${totalInc.toFixed(2)}` : '';
+  const incTotal = totalInc > 0 ? '\nTotal: €' + totalInc.toFixed(2) : '';
 
   // Build Un-AI-able badges text
   const badgesText = (S.ua || []).length > 0
-    ? (S.ua || []).map(b => `  🧠 ${b}`).join('\n')
+    ? (S.ua || []).map(b => '  🧠 ' + b).join('\n')
     : 'No badges yet.';
 
   // Build reflection text
   let refText = '';
-  if (S.monthly) refText += `Monthly Intention: ${S.monthly}\n\n`;
-  if (S.vision)  refText += `Vision of Life: ${S.vision}\n\n`;
+  if (S.monthly) refText += 'Monthly Intention: ' + S.monthly + '\n\n';
+  if (S.vision)  refText += 'Vision of Life: ' + S.vision + '\n\n';
   LVS.forEach(lv => {
-    if (S.ref && S.ref[lv.id]) refText += `Level ${lv.id} Reflection: ${S.ref[lv.id]}\n\n`;
+    if (S.ref && S.ref[lv.id]) refText += 'Level ' + lv.id + ' Reflection: ' + S.ref[lv.id] + '\n\n';
   });
-  if (S.questionsForE) refText += `Questions for Prof. Dr. E: ${S.questionsForE}\n`;
+  if (S.questionsForE) refText += 'Questions for Prof. Dr. E: ' + S.questionsForE + '\n';
 
   // Build full report as plain text for email body
   const reportText = [
     '═══════════════════════════════════════',
-    'CreatingReorganized — Side-Hustle Hero's Journey',
+    "CreatingReorganized — Side-Hustle Hero's Journey",
     'Milestone Report · Protocol 5 — Empowerment Architecture',
     '═══════════════════════════════════════',
     '',
@@ -3423,13 +3423,13 @@ function sendReportByEmail(email) {
   .then(() => {
     if (btn) { btn.textContent = '✅ Report Sent!'; btn.disabled = false; }
     setTimeout(() => { if (btn) btn.textContent = '📄 Export Report'; }, 3000);
-    alert('✅ Your report has been sent to ' + email + '\n\nCheck your inbox in the next few minutes!');
+    alert('✅ Your report has been sent to ' + email + ' — Check your inbox in the next few minutes!');
   })
   .catch(() => {
     // CORS — likely succeeded anyway
     if (btn) { btn.textContent = '✅ Report Sent!'; btn.disabled = false; }
     setTimeout(() => { if (btn) btn.textContent = '📄 Export Report'; }, 3000);
-    alert('✅ Your report has been sent to ' + email + '\n\nCheck your inbox in the next few minutes!');
+    alert('✅ Your report has been sent to ' + email + ' — Check your inbox in the next few minutes!');
   });
 }
 
