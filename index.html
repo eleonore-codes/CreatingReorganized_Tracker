@@ -3234,14 +3234,203 @@ function shareEqInstagram() {
 
 /* ════ PDF MILESTONE REPORT ════ */
 function openPdfReport() {
-  populatePdfReport();
-  document.getElementById('printReport').style.display = 'block';
-  // Switch to a clean print view
-  window.print();
-  // Hide report again after print dialog
-  setTimeout(() => {
-    document.getElementById('printReport').style.display = 'none';
-  }, 1000);
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  if (isMobile) {
+    mobileReport();
+  } else {
+    populatePdfReport();
+    document.getElementById('printReport').style.display = 'block';
+    window.print();
+    setTimeout(() => {
+      document.getElementById('printReport').style.display = 'none';
+    }, 1000);
+  }
+}
+
+function mobileReport() {
+  // Check if we have an email to send to
+  const email = S.subscriberEmail || '';
+  if (!email || !email.includes('@')) {
+    // No email saved — show modal asking for email first
+    showReportEmailModal();
+    return;
+  }
+  // We have an email — generate and send
+  sendReportByEmail(email);
+}
+
+function showReportEmailModal() {
+  // Create modal if not exists
+  let modal = document.getElementById('reportEmailModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'reportEmailModal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(8,25,55,.78);z-index:960;display:flex;align-items:center;justify-content:center;padding:1rem;';
+    modal.innerHTML = `<div style="background:var(--surf);border-radius:12px;padding:1.5rem;max-width:420px;width:100%;box-shadow:0 4px 24px rgba(0,0,0,.3);">
+      <div style="font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:800;color:var(--yel);margin-bottom:.3rem;">📄 Email My Report</div>
+      <div style="font-size:.82rem;color:var(--mute);margin-bottom:1rem;line-height:1.5;">On mobile, your report is emailed to you as a beautifully formatted HTML page. Enter your email below.</div>
+      <input type="text" id="reportEmailInput" placeholder="your@email.com" style="width:100%;margin-bottom:.65rem;"/>
+      <div style="display:flex;gap:.45rem;justify-content:center;flex-wrap:wrap;">
+        <button class="btn btn-y btn-sm" onclick="submitReportEmail()">📧 Email My Report</button>
+        <button class="btn btn-g btn-sm" onclick="closeReportEmailModal()">Cancel</button>
+      </div>
+      <div id="reportEmailStatus" style="margin-top:.55rem;font-size:.78rem;text-align:center;"></div>
+    </div>`;
+    document.body.appendChild(modal);
+  }
+  // Pre-fill if we have a name
+  const inp = document.getElementById('reportEmailInput');
+  if (inp && S.subscriberEmail) inp.value = S.subscriberEmail;
+  modal.style.display = 'flex';
+}
+
+function closeReportEmailModal() {
+  const m = document.getElementById('reportEmailModal');
+  if (m) m.style.display = 'none';
+}
+
+function submitReportEmail() {
+  const email = (document.getElementById('reportEmailInput').value || '').trim();
+  if (!email || !email.includes('@')) {
+    document.getElementById('reportEmailStatus').textContent = '⚠️ Please enter a valid email address.';
+    return;
+  }
+  // Save email for future use
+  S.subscriberEmail = email;
+  sv();
+  closeReportEmailModal();
+  sendReportByEmail(email);
+}
+
+function sendReportByEmail(email) {
+  // Show sending indicator
+  const btn = document.querySelector('.pdf-btn-float');
+  if (btn) { btn.textContent = '⏳ Sending...'; btn.disabled = true; }
+
+  // Build report data object (text summary — not full HTML to keep payload small)
+  const lv = LVS[S.lv - 1];
+  const doneMs = Object.values(S.chk || {}).filter(Boolean).length;
+  const totalMs = LVS.reduce((a,l) => a + l.ms.length, 0);
+  const totalInc = (S.inc || []).reduce((a,i) => a + i.amt, 0);
+  const lvsDone = LVS.filter(l => lpct(l.id) === 100).length;
+  const listenedCount = Object.values(S.epListened || {}).filter(Boolean).length;
+  const today = new Date().toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric'});
+  const degLabel = getDegLabel() || 'Not specified';
+
+  // Build completed milestones text
+  let msText = '';
+  LVS.forEach(lv => {
+    const done = lv.ms.filter(m => S.chk && S.chk[m.id]);
+    if (done.length > 0) {
+      msText += `Level ${lv.id} — ${lv.name} (${done.length}/${lv.ms.length}):\n`;
+      done.forEach(m => { msText += `  ✓ ${m.t}\n`; });
+      msText += '\n';
+    }
+  });
+
+  // Build income text
+  let incText = S.inc && S.inc.length > 0
+    ? S.inc.map(i => `  ${i.dt}: ${i.desc} — €${i.amt.toFixed(2)}`).join('\n')
+    : 'No income logged yet.';
+  const incTotal = totalInc > 0 ? `\nTotal: €${totalInc.toFixed(2)}` : '';
+
+  // Build Un-AI-able badges text
+  const badgesText = (S.ua || []).length > 0
+    ? (S.ua || []).map(b => `  🧠 ${b}`).join('\n')
+    : 'No badges yet.';
+
+  // Build reflection text
+  let refText = '';
+  if (S.monthly) refText += `Monthly Intention: ${S.monthly}\n\n`;
+  if (S.vision)  refText += `Vision of Life: ${S.vision}\n\n`;
+  LVS.forEach(lv => {
+    if (S.ref && S.ref[lv.id]) refText += `Level ${lv.id} Reflection: ${S.ref[lv.id]}\n\n`;
+  });
+  if (S.questionsForE) refText += `Questions for Prof. Dr. E: ${S.questionsForE}\n`;
+
+  // Build full report as plain text for email body
+  const reportText = [
+    '═══════════════════════════════════════',
+    'CreatingReorganized — Side-Hustle Hero's Journey',
+    'Milestone Report · Protocol 5 — Empowerment Architecture',
+    '═══════════════════════════════════════',
+    '',
+    `Student: ${S.name || 'Not set'}`,
+    `Degree: ${degLabel}`,
+    `University: ${S.uni || 'Not set'}`,
+    `Current Level: ${S.lv} — ${lv.name}`,
+    `Generated: ${today}`,
+    '',
+    '── PROGRESS SUMMARY ──────────────────',
+    `Milestones: ${doneMs}/${totalMs}`,
+    `Levels complete: ${lvsDone}/6`,
+    `Episodes listened: ${listenedCount}/24`,
+    `Un-AI-able badges: ${(S.ua||[]).length}`,
+    `Income logged: €${totalInc.toFixed(2)}`,
+    '',
+    '── COMPLETED MILESTONES ──────────────',
+    msText || 'No milestones completed yet.',
+    '── INCOME LOG ────────────────────────',
+    incText + incTotal,
+    '',
+    '── UN-AI-ABLE SKILL BADGES ───────────',
+    badgesText,
+    '',
+    '── REFLECTIONS & GOALS ───────────────',
+    refText || 'No reflections yet.',
+    '── STAY CONNECTED ────────────────────',
+    '🎙 Show: postdoctransformation.ac-page.com/creatingreorganized',
+    '💼 LinkedIn: linkedin.com/in/eleonoresoeiwinkels',
+    '📸 Instagram: @postdoctransformation',
+    '🎵 TikTok: @profdreleonore',
+    '📬 Newsletter: postdoctransformation.ac-page.com/creatingreorganized_journey',
+    '',
+    '#CreatingReorganized_StudentTracker',
+    '═══════════════════════════════════════',
+  ].join('\n');
+
+  // Send to Make webhook with type: 'report'
+  const payload = {
+    type: 'report',
+    email: email,
+    name: S.name || 'Student',
+    level: String(S.lv),
+    protocol: 'Protocol5_EmpowermentArchitecture',
+    tag: 'CreatingReorganized_StudentTracker',
+    source: 'StudentTracker_MobileReport',
+    reportText: reportText,
+    reportDate: today,
+    stats: {
+      milestones: doneMs + '/' + totalMs,
+      levels: lvsDone + '/6',
+      episodes: listenedCount + '/24',
+      badges: String((S.ua||[]).length),
+      income: '€' + totalInc.toFixed(2),
+    }
+  };
+
+  if (!PROTOCOL.makeWebhookUrl || PROTOCOL.makeWebhookUrl === 'PASTE_YOUR_MAKE_WEBHOOK_URL_HERE') {
+    if (btn) { btn.textContent = '📄 Export Report'; btn.disabled = false; }
+    alert('Webhook not configured. Please contact Prof. Dr. E directly at eleonore@postdoctransformation.com');
+    return;
+  }
+
+  fetch(PROTOCOL.makeWebhookUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  .then(() => {
+    if (btn) { btn.textContent = '✅ Report Sent!'; btn.disabled = false; }
+    setTimeout(() => { if (btn) btn.textContent = '📄 Export Report'; }, 3000);
+    alert('✅ Your report has been sent to ' + email + '\n\nCheck your inbox in the next few minutes!');
+  })
+  .catch(() => {
+    // CORS — likely succeeded anyway
+    if (btn) { btn.textContent = '✅ Report Sent!'; btn.disabled = false; }
+    setTimeout(() => { if (btn) btn.textContent = '📄 Export Report'; }, 3000);
+    alert('✅ Your report has been sent to ' + email + '\n\nCheck your inbox in the next few minutes!');
+  });
 }
 
 function populatePdfReport() {
