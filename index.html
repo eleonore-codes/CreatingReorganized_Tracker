@@ -1409,8 +1409,8 @@ select{cursor:pointer;}
   <div class="sett-section">
     <div class="rl">🏫 Your University / Faculty</div>
     <div class="sett-row">
-      <input type="text" id="uniIn" placeholder="e.g. Your Degree Hochschule, Düsseldorf" oninput="saveUni()"/>
-      <div class="sett-hint">Shown on your Overview dashboard.</div>
+      <input type="text" id="uniIn" placeholder="e.g. University of Amsterdam, LSE, Harvard Extension…" oninput="saveUni()"/>
+      <div class="sett-hint">Enter your university, college, or learning institution — anywhere in the world.</div>
     </div>
   </div>
 
@@ -1440,17 +1440,17 @@ select{cursor:pointer;}
 
 
   <div class="sub-box">
-    <div class="rl">✉️ Subscribe to Prof. Dr. E's Newsletter</div>
-    <p class="sm mute mb5">Get weekly insights, templates, and your own CreatingReorganized journey path. Unsubscribe anytime.</p>
+    <div class="rl">💛 Join Prof. Dr. E's Inner Circle</div>
+    <p class="sm mute mb5">What you get as a member: weekly templates &amp; episode resources, early access to new tracker features, invitations to CreatingReorganized season parties and live workshops, and your own newsletter path based on where you are in your journey. No spam — ever. Unsubscribe in one click anytime.</p>
     <div style="display:flex;flex-direction:column;gap:.45rem;margin-top:.5rem;">
       <input type="text" id="subName" placeholder="Your first name (optional)" oninput="saveSubName()"/>
       <input type="text" id="subEmail" placeholder="your@email.com" oninput="saveSubEmail()"/>
     </div>
     <div class="consent-row">
       <input type="checkbox" id="subConsent"/>
-      <label for="subConsent">I agree to receive Prof. Dr. E's CreatingReorganized newsletter and understand I can unsubscribe at any time. A confirmation email will be sent to verify your address.</label>
+      <label for="subConsent">I agree to join Prof. Dr. E's CreatingReorganized Inner Circle newsletter. I will receive a confirmation email to verify my address before being added. I can unsubscribe at any time with one click.</label>
     </div>
-    <button class="btn btn-y btn-sm" onclick="submitSubscribe()" id="subBtn">💛 Subscribe to Prof. Dr. E's list</button>
+    <button class="btn btn-y btn-sm" onclick="submitSubscribe()" id="subBtn">💛 Join Prof. Dr. E's Inner Circle</button>
     <div class="sub-status" id="subStatus"></div>
   </div>
 
@@ -1652,7 +1652,7 @@ const LVS = [
   {id:1,name:'Spark',avatar:'Student Seeker',col:'#335f9f',lt:'#eaf0f8',
    desc:"You've felt the spark. Your unique story, skills, and curiosity are the foundation. Identify the problem only YOU can solve.",
    mentor:'"You don\'t need to be perfect. You need to start. The video podcast you don\'t make today is the trust you don\'t build tomorrow. Your story is your unfair advantage — no AI can replicate your lived experience." — Episode 1',
-   defMod:'Intro to Business Psychology',ep:'Episodes 1–4',
+   defMod:'Business & Psychology',ep:'Episodes 1–4',
    prompt:'What unique problem can only YOU solve?',
    prompts:['What is your unfair advantage?','Who needs your story most right now?','What fear is actually a signal to start?'],
    ms:[
@@ -3236,7 +3236,7 @@ function shareEqInstagram() {
 function openPdfReport() {
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   if (isMobile) {
-    mobileReport();
+    openReportInNewTab();
   } else {
     populatePdfReport();
     document.getElementById('printReport').style.display = 'block';
@@ -3247,67 +3247,10 @@ function openPdfReport() {
   }
 }
 
-function mobileReport() {
-  // Check if we have an email to send to
-  const email = S.subscriberEmail || '';
-  if (!email || !email.includes('@')) {
-    // No email saved — show modal asking for email first
-    showReportEmailModal();
-    return;
-  }
-  // We have an email — generate and send
-  sendReportByEmail(email);
-}
+function openReportInNewTab() {
+  // Build complete report HTML as a self-contained page
+  populatePdfReport(); // populate the hidden report first
 
-function showReportEmailModal() {
-  // Create modal if not exists
-  let modal = document.getElementById('reportEmailModal');
-  if (!modal) {
-    modal = document.createElement('div');
-    modal.id = 'reportEmailModal';
-    modal.style.cssText = 'position:fixed;inset:0;background:rgba(8,25,55,.78);z-index:960;display:flex;align-items:center;justify-content:center;padding:1rem;';
-    modal.innerHTML = `<div style="background:var(--surf);border-radius:12px;padding:1.5rem;max-width:420px;width:100%;box-shadow:0 4px 24px rgba(0,0,0,.3);">
-      <div style="font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:800;color:var(--yel);margin-bottom:.3rem;">📄 Email My Report</div>
-      <div style="font-size:.82rem;color:var(--mute);margin-bottom:1rem;line-height:1.5;">On mobile, your report is emailed to you as a beautifully formatted HTML page. Enter your email below.</div>
-      <input type="text" id="reportEmailInput" placeholder="your@email.com" style="width:100%;margin-bottom:.65rem;"/>
-      <div style="display:flex;gap:.45rem;justify-content:center;flex-wrap:wrap;">
-        <button class="btn btn-y btn-sm" onclick="submitReportEmail()">📧 Email My Report</button>
-        <button class="btn btn-g btn-sm" onclick="closeReportEmailModal()">Cancel</button>
-      </div>
-      <div id="reportEmailStatus" style="margin-top:.55rem;font-size:.78rem;text-align:center;"></div>
-    </div>`;
-    document.body.appendChild(modal);
-  }
-  // Pre-fill if we have a name
-  const inp = document.getElementById('reportEmailInput');
-  if (inp && S.subscriberEmail) inp.value = S.subscriberEmail;
-  modal.style.display = 'flex';
-}
-
-function closeReportEmailModal() {
-  const m = document.getElementById('reportEmailModal');
-  if (m) m.style.display = 'none';
-}
-
-function submitReportEmail() {
-  const email = (document.getElementById('reportEmailInput').value || '').trim();
-  if (!email || !email.includes('@')) {
-    document.getElementById('reportEmailStatus').textContent = '⚠️ Please enter a valid email address.';
-    return;
-  }
-  // Save email for future use
-  S.subscriberEmail = email;
-  sv();
-  closeReportEmailModal();
-  sendReportByEmail(email);
-}
-
-function sendReportByEmail(email) {
-  // Show sending indicator
-  const btn = document.querySelector('.pdf-btn-float');
-  if (btn) { btn.textContent = '⏳ Sending...'; btn.disabled = true; }
-
-  // Build report data object (text summary — not full HTML to keep payload small)
   const lv = LVS[S.lv - 1];
   const doneMs = Object.values(S.chk || {}).filter(Boolean).length;
   const totalMs = LVS.reduce((a,l) => a + l.ms.length, 0);
@@ -3315,123 +3258,213 @@ function sendReportByEmail(email) {
   const lvsDone = LVS.filter(l => lpct(l.id) === 100).length;
   const listenedCount = Object.values(S.epListened || {}).filter(Boolean).length;
   const today = new Date().toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric'});
-  const degLabel = getDegLabel() || 'Not specified';
+  const degLabel = getDegLabel() || 'Not set';
 
-  // Build completed milestones text
-  let msText = '';
+  // Build milestones HTML
+  let msHtml = '';
   LVS.forEach(lv => {
     const done = lv.ms.filter(m => S.chk && S.chk[m.id]);
-    if (done.length > 0) {
-      msText += `Level ${lv.id} — ${lv.name} (${done.length}/${lv.ms.length}):\n`;
-      done.forEach(m => { msText += '  ✓ ' + m.t + '\n'; });
-      msText += '\n';
-    }
+    if (done.length === 0) return;
+    msHtml += `<div style="margin-bottom:12px;">
+      <div style="font-weight:700;color:#335f9f;font-size:13px;margin-bottom:6px;padding:4px 8px;background:#EAF2FB;border-radius:4px;">
+        Level ${lv.id}: ${lv.name} — ${done.length}/${lv.ms.length} complete
+      </div>`;
+    done.forEach(m => {
+      msHtml += `<div style="display:flex;gap:8px;padding:4px 8px;border-bottom:1px solid #eaf0f8;font-size:12px;">
+        <span style="color:#1B8A4A;font-weight:700;">✓</span>
+        <span>${m.t}</span>
+      </div>`;
+    });
+    msHtml += '</div>';
   });
 
-  // Build income text
-  let incText = S.inc && S.inc.length > 0
-    ? S.inc.map(i => `  ${i.dt}: ${i.desc} — €${i.amt.toFixed(2)}`).join('\n')
-    : 'No income logged yet.';
-  const incTotal = totalInc > 0 ? '\nTotal: €' + totalInc.toFixed(2) : '';
-
-  // Build Un-AI-able badges text
-  const badgesText = (S.ua || []).length > 0
-    ? (S.ua || []).map(b => '  🧠 ' + b).join('\n')
-    : 'No badges yet.';
-
-  // Build reflection text
-  let refText = '';
-  if (S.monthly) refText += 'Monthly Intention: ' + S.monthly + '\n\n';
-  if (S.vision)  refText += 'Vision of Life: ' + S.vision + '\n\n';
-  LVS.forEach(lv => {
-    if (S.ref && S.ref[lv.id]) refText += 'Level ' + lv.id + ' Reflection: ' + S.ref[lv.id] + '\n\n';
-  });
-  if (S.questionsForE) refText += 'Questions for Prof. Dr. E: ' + S.questionsForE + '\n';
-
-  // Build full report as plain text for email body
-  const reportText = [
-    '═══════════════════════════════════════',
-    "CreatingReorganized — Side-Hustle Hero's Journey",
-    'Milestone Report · Protocol 5 — Empowerment Architecture',
-    '═══════════════════════════════════════',
-    '',
-    `Student: ${S.name || 'Not set'}`,
-    `Degree: ${degLabel}`,
-    `University: ${S.uni || 'Not set'}`,
-    `Current Level: ${S.lv} — ${lv.name}`,
-    `Generated: ${today}`,
-    '',
-    '── PROGRESS SUMMARY ──────────────────',
-    `Milestones: ${doneMs}/${totalMs}`,
-    `Levels complete: ${lvsDone}/6`,
-    `Episodes listened: ${listenedCount}/24`,
-    `Un-AI-able badges: ${(S.ua||[]).length}`,
-    `Income logged: €${totalInc.toFixed(2)}`,
-    '',
-    '── COMPLETED MILESTONES ──────────────',
-    msText || 'No milestones completed yet.',
-    '── INCOME LOG ────────────────────────',
-    incText + incTotal,
-    '',
-    '── UN-AI-ABLE SKILL BADGES ───────────',
-    badgesText,
-    '',
-    '── REFLECTIONS & GOALS ───────────────',
-    refText || 'No reflections yet.',
-    '── STAY CONNECTED ────────────────────',
-    '🎙 Show: postdoctransformation.ac-page.com/creatingreorganized',
-    '💼 LinkedIn: linkedin.com/in/eleonoresoeiwinkels',
-    '📸 Instagram: @postdoctransformation',
-    '🎵 TikTok: @profdreleonore',
-    '📬 Newsletter: postdoctransformation.ac-page.com/creatingreorganized_journey',
-    '',
-    '#CreatingReorganized_StudentTracker',
-    '═══════════════════════════════════════',
-  ].join('\n');
-
-  // Send to Make webhook with type: 'report'
-  const payload = {
-    type: 'report',
-    email: email,
-    name: S.name || 'Student',
-    level: String(S.lv),
-    protocol: 'Protocol5_EmpowermentArchitecture',
-    tag: 'CreatingReorganized_StudentTracker',
-    source: 'StudentTracker_MobileReport',
-    reportText: reportText,
-    reportDate: today,
-    stats: {
-      milestones: doneMs + '/' + totalMs,
-      levels: lvsDone + '/6',
-      episodes: listenedCount + '/24',
-      badges: String((S.ua||[]).length),
-      income: '€' + totalInc.toFixed(2),
-    }
-  };
-
-  if (!PROTOCOL.makeWebhookUrl || PROTOCOL.makeWebhookUrl === 'PASTE_YOUR_MAKE_WEBHOOK_URL_HERE') {
-    if (btn) { btn.textContent = '📄 Export Report'; btn.disabled = false; }
-    alert('Webhook not configured. Please contact Prof. Dr. E directly at eleonore@postdoctransformation.com');
-    return;
+  // Build income HTML
+  let incHtml = '';
+  if (S.inc && S.inc.length > 0) {
+    S.inc.forEach(i => {
+      incHtml += `<div style="display:flex;justify-content:space-between;padding:4px 8px;border-bottom:1px solid #eaf0f8;font-size:12px;">
+        <span style="color:#5A6E88;">${i.dt}</span>
+        <span style="flex:1;padding:0 12px;">${i.desc}</span>
+        <span style="font-weight:700;color:#1B8A4A;">€${i.amt.toFixed(2)}</span>
+      </div>`;
+    });
+    incHtml += `<div style="text-align:right;padding:6px 8px;font-weight:800;color:#335f9f;font-size:13px;">Total: €${totalInc.toFixed(2)}</div>`;
+  } else {
+    incHtml = '<p style="color:#5A6E88;font-size:12px;padding:4px 8px;">No income logged yet.</p>';
   }
 
-  fetch(PROTOCOL.makeWebhookUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  })
-  .then(() => {
-    if (btn) { btn.textContent = '✅ Report Sent!'; btn.disabled = false; }
-    setTimeout(() => { if (btn) btn.textContent = '📄 Export Report'; }, 3000);
-    alert('✅ Your report has been sent to ' + email + ' — Check your inbox in the next few minutes!');
-  })
-  .catch(() => {
-    // CORS — likely succeeded anyway
-    if (btn) { btn.textContent = '✅ Report Sent!'; btn.disabled = false; }
-    setTimeout(() => { if (btn) btn.textContent = '📄 Export Report'; }, 3000);
-    alert('✅ Your report has been sent to ' + email + ' — Check your inbox in the next few minutes!');
+  // Build badges HTML
+  const badgesHtml = (S.ua || []).length > 0
+    ? (S.ua || []).map(b => `<span style="display:inline-block;background:#FFFBE6;border:1.5px solid #c4892a;color:#7a5200;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:600;margin:3px;">🧠 ${b}</span>`).join('')
+    : '<p style="color:#5A6E88;font-size:12px;">No badges yet.</p>';
+
+  // Build reflections HTML
+  let refHtml = '';
+  if (S.monthly) refHtml += `<div style="margin-bottom:10px;"><strong style="color:#335f9f;font-size:12px;">Monthly Intention:</strong><p style="font-size:12px;margin:4px 0 0;">${S.monthly}</p></div>`;
+  if (S.vision)  refHtml += `<div style="margin-bottom:10px;"><strong style="color:#335f9f;font-size:12px;">Vision of Life:</strong><p style="font-size:12px;margin:4px 0 0;">${S.vision}</p></div>`;
+  LVS.forEach(lv => {
+    if (S.ref && S.ref[lv.id]) {
+      refHtml += `<div style="margin-bottom:10px;"><strong style="color:#335f9f;font-size:12px;">Level ${lv.id} Reflection:</strong><p style="font-size:12px;margin:4px 0 0;">${S.ref[lv.id]}</p></div>`;
+    }
   });
+  const goals = (S.goals || []).filter(g => g.d);
+  if (goals.length > 0) {
+    refHtml += `<div style="margin-bottom:10px;"><strong style="color:#335f9f;font-size:12px;">Completed Goals:</strong>`;
+    goals.forEach(g => { refHtml += `<div style="font-size:12px;padding:2px 0;">✅ ${g.t}</div>`; });
+    refHtml += '</div>';
+  }
+  if (S.questionsForE) refHtml += `<div style="margin-bottom:10px;"><strong style="color:#335f9f;font-size:12px;">Questions for Prof. Dr. E:</strong><p style="font-size:12px;margin:4px 0 0;">${S.questionsForE}</p></div>`;
+  if (!refHtml) refHtml = '<p style="color:#5A6E88;font-size:12px;">No reflections yet.</p>';
+
+  // Module cross-reference
+  const modHtml = LVS.map(lv =>
+    `<div style="display:flex;align-items:center;gap:8px;padding:4px 8px;background:#F0F4F8;border-radius:4px;margin-bottom:3px;font-size:11px;">
+      <span style="background:#EAF2FB;color:#335f9f;padding:2px 8px;border-radius:3px;font-weight:700;min-width:60px;text-align:center;">Lvl ${lv.id}</span>
+      <span style="font-weight:600;color:#16243A;">${getModFor(lv.id)}</span>
+      <span style="color:#5A6E88;margin-left:auto;">${lv.ep}</span>
+    </div>`
+  ).join('');
+
+  // Stat boxes
+  const stats = [
+    {n: S.lv+'/6', l:'Current Level'},
+    {n: doneMs+'/'+totalMs, l:'Milestones'},
+    {n: lvsDone+'/6', l:'Levels Done'},
+    {n: '€'+totalInc.toFixed(2), l:'Income'},
+    {n: (S.ua||[]).length, l:'Badges'},
+    {n: listenedCount+'/24', l:'Episodes'},
+  ];
+  const statsHtml = stats.map(s =>
+    `<div style="background:#F0F4F8;border-radius:8px;padding:10px;text-align:center;min-width:70px;">
+      <div style="font-size:18px;font-weight:900;color:#1e3d6e;font-family:Arial,sans-serif;">${s.n}</div>
+      <div style="font-size:9px;color:#5A6E88;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-top:2px;">${s.l}</div>
+    </div>`
+  ).join('');
+
+  // Full report page HTML
+  const reportPage = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>CreatingReorganized — My Milestone Report</title>
+<style>
+  body{font-family:Arial,sans-serif;margin:0;padding:0;background:#fff;color:#16243A;}
+  .section{border:1.5px solid #D5E2F0;border-radius:8px;padding:12px;margin-bottom:14px;page-break-inside:avoid;}
+  .section-title{font-size:13px;font-weight:800;color:#335f9f;margin-bottom:8px;padding-bottom:6px;border-bottom:2px solid #e9b25d;}
+  a{color:#335f9f;}
+  @media print{
+    body{font-size:11pt;}
+    .no-print{display:none!important;}
+    .section{border:1px solid #D5E2F0!important;}
+  }
+</style>
+</head>
+<body>
+<!-- Save instructions banner -->
+<div class="no-print" style="background:#e9b25d;color:#1e3d6e;padding:12px 16px;text-align:center;font-size:13px;font-weight:700;position:sticky;top:0;z-index:100;">
+  📄 To save as PDF: tap the <strong>Share button</strong> → <strong>Print</strong> → <strong>Save as PDF</strong>
+</div>
+
+<!-- Header -->
+<div style="background:linear-gradient(135deg,#1e3d6e,#335f9f);color:#fff;padding:20px;margin-bottom:14px;">
+  <div style="font-size:20px;font-weight:900;margin-bottom:4px;">CreatingReorganized</div>
+  <div style="font-size:13px;font-weight:600;opacity:.85;">Side-Hustle Hero's Journey — Milestone Report</div>
+  <div style="font-size:11px;opacity:.65;margin-top:2px;">Protocol 5 — Empowerment Architecture Protocol</div>
+  <div style="font-size:10px;opacity:.55;margin-top:4px;">Generated: ${today}</div>
+</div>
+
+<div style="padding:0 16px 24px;">
+
+<!-- Student info -->
+<div class="section">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+    <div><div style="font-size:9px;font-weight:700;color:#5A6E88;text-transform:uppercase;letter-spacing:.4px;">Student</div><div style="font-weight:700;font-size:13px;">${S.name || 'Not set'}</div></div>
+    <div><div style="font-size:9px;font-weight:700;color:#5A6E88;text-transform:uppercase;letter-spacing:.4px;">Degree</div><div style="font-weight:700;font-size:13px;">${degLabel}</div></div>
+    <div><div style="font-size:9px;font-weight:700;color:#5A6E88;text-transform:uppercase;letter-spacing:.4px;">University</div><div style="font-weight:700;font-size:13px;">${S.uni || 'Not set'}</div></div>
+    <div><div style="font-size:9px;font-weight:700;color:#5A6E88;text-transform:uppercase;letter-spacing:.4px;">Current Level</div><div style="font-weight:700;font-size:13px;">Level ${S.lv} — ${lv.name}</div></div>
+  </div>
+</div>
+
+<!-- Stats -->
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">${statsHtml}</div>
+
+<!-- Milestones -->
+<div class="section">
+  <div class="section-title">✅ Completed Milestones</div>
+  ${msHtml || '<p style="color:#5A6E88;font-size:12px;">No milestones completed yet.</p>'}
+</div>
+
+<!-- Income -->
+<div class="section">
+  <div class="section-title">💶 Income Log</div>
+  ${incHtml}
+</div>
+
+<!-- Reflections -->
+<div class="section">
+  <div class="section-title">📓 Reflections &amp; Goals</div>
+  ${refHtml}
+</div>
+
+<!-- Badges -->
+<div class="section">
+  <div class="section-title">🧠 Un-AI-able Skill Badges</div>
+  ${badgesHtml}
+</div>
+
+<!-- Modules -->
+<div class="section">
+  <div class="section-title">🎓 Module Cross-Reference</div>
+  ${modHtml}
+</div>
+
+<!-- Links -->
+<div class="section" style="background:#fffbe6;border-color:#e9b25d;">
+  <div class="section-title">🔗 Stay Connected</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;">
+    <div>🎙 <a href="https://postdoctransformation.ac-page.com/creatingreorganized">Show</a></div>
+    <div>💼 <a href="https://www.linkedin.com/in/eleonoresoeiwinkels">LinkedIn</a></div>
+    <div>📸 <a href="https://www.instagram.com/postdoctransformation">Instagram</a></div>
+    <div>🎵 <a href="https://www.tiktok.com/@profdreleonore">TikTok</a></div>
+    <div>📬 <a href="https://postdoctransformation.ac-page.com/creatingreorganized_journey">Newsletter</a></div>
+    <div>🎉 <a href="https://postdoctransformation.ac-page.com/creatingreorganized_events">Events</a></div>
+  </div>
+  <div style="margin-top:10px;padding-top:8px;border-top:1px solid #d9a040;font-size:11px;">
+    <div style="font-weight:700;color:#335f9f;margin-bottom:4px;">🛠 Founder's Toolbox</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+      <div><a href="https://www.podbean.com/esw">Podbean</a></div>
+      <div><a href="https://get.descript.com/creatingreorganized">Descript</a></div>
+      <div><a href="https://typeform.cello.so/FxXD1YT3V9z">Typeform</a></div>
+      <div><a href="https://try.activecampaign.com/creatingreorganized">ActiveCampaign</a></div>
+      <div><a href="https://s.mtrbio.com/DMOGXJ">Metricool</a></div>
+      <div><a href="https://get.castmagic.io/creatingreorganized">Castmagic</a></div>
+      <div><a href="https://try.partnerstack.com/creatingreorganized">PartnerStack</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div style="text-align:center;padding:12px;border-top:3px solid #e9b25d;margin-top:4px;">
+  <div style="font-weight:800;font-size:13px;color:#1e3d6e;">CreatingReorganized — Empowerment Architecture Protocol</div>
+  <div style="font-size:10px;color:#5A6E88;margin-top:2px;">Prof. Dr. Eleonore Soei-Winkels · eleonore@postdoctransformation.com</div>
+  <div style="font-size:9px;color:#5A6E88;margin-top:1px;">#CreatingReorganized_StudentTracker</div>
+</div>
+
+</div>
+</body>
+</html>`;
+
+  // Open in new tab
+  const win = window.open('', '_blank');
+  if (win) {
+    win.document.write(reportPage);
+    win.document.close();
+  } else {
+    alert('Please allow pop-ups for this site to view your report.\n\nOn iPhone: Settings → Safari → Block Pop-ups → turn OFF');
+  }
 }
+
 
 function populatePdfReport() {
   const lv = LVS[S.lv - 1];
@@ -4193,7 +4226,7 @@ function restoreSubFields() {
 function showSubSuccess() {
   const st = document.getElementById('subStatus');
   const btn = document.getElementById('subBtn');
-  if (st) { st.className = 'sub-status ok'; st.textContent = '✅ You\'re subscribed! Check your inbox for a confirmation email from Prof. Dr. E.'; }
+  if (st) { st.className = 'sub-status ok'; st.textContent = '✅ Welcome to the Inner Circle! Check your inbox for a confirmation email from Prof. Dr. E. 💛'; }
   if (btn) { btn.disabled = true; btn.textContent = '✅ Subscribed'; btn.style.opacity = '.6'; }
 }
 
