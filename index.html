@@ -1071,7 +1071,7 @@ select{cursor:pointer;}
   <div class="tab" data-t="ideation" onclick="sw(this)">💡 Ideation Lab</div>
   <div class="tab" data-t="reflect" onclick="sw(this)">📓 Reflection</div>
   <div class="tab" data-t="episodes" onclick="sw(this)">🎙 Episodes</div>
-  <div class="tab" data-t="income" onclick="sw(this)">💰 Income</div>
+  <div class="tab" data-t="income" onclick="sw(this)">💶 Revenue & ROI</div>
   <div class="tab" data-t="toolbox" onclick="sw(this)">🛠 Toolbox</div>
   <div class="tab" data-t="overview" onclick="sw(this)">📊 Overview</div>
   <div class="tab" data-t="moments" onclick="sw(this)">🏆 Moments</div>
@@ -1274,21 +1274,59 @@ select{cursor:pointer;}
   <span style="color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;letter-spacing:.3px;">CreatingReorganized</span>
   <span style="color:rgba(255,255,255,.55);font-size:.72rem;margin-left:auto;">Side-Hustle Hero's Journey</span>
 </div>
-  <div class="ib">
-    <div class="sec">💰 Income Log — First Euro Changes Everything</div>
-    <div style="margin-bottom:.85rem;">
-      <div class="tot" id="incTot">€0.00</div>
-      <div class="sm mute mt5">Total side-hustle income logged. Log your first euro to unlock the Future-Proof Captain badge.</div>
-    </div>
-    <div class="if">
-      <input type="text" id="iDesc" placeholder="Income source (e.g. coaching call, e-course sale, affiliate)"/>
-      <input type="number" id="iAmt" placeholder="€ amount" min="0" step="0.01"/>
-      <input type="date" id="iDt"/>
-      <button class="btn btn-sm" onclick="addInc()">Log Income</button>
-    </div>
-    <div class="il" id="iL"></div>
+
+<!-- ROI SUMMARY CARDS -->
+<div id="roiSummary" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.7rem;margin-bottom:1.1rem;"></div>
+
+<!-- ROI VERDICT BANNER -->
+<div id="roiVerdict" style="display:none;margin-bottom:1.1rem;border-radius:var(--r);padding:.85rem 1.1rem;font-weight:700;font-size:.91rem;"></div>
+
+<!-- INCOME LOG -->
+<div class="ib" style="margin-bottom:1.1rem;">
+  <div class="sec">💰 Income Log — First Euro Changes Everything</div>
+  <div class="if">
+    <input type="text" id="iDesc" placeholder="Income source (e.g. coaching call, e-course sale, affiliate)"/>
+    <input type="number" id="iAmt" placeholder="€ amount" min="0" step="0.01"/>
+    <input type="date" id="iDt"/>
+    <button class="btn btn-sm" onclick="addInc()">Log Income</button>
   </div>
+  <div class="il" id="iL"></div>
 </div>
+
+<!-- EXPENSES — STARTUP -->
+<div class="ib" style="margin-bottom:1.1rem;">
+  <div class="sec">🏗 Startup Costs <span style="font-size:.72rem;font-weight:400;color:var(--mute);margin-left:.4rem;">One-time investments to launch your side-hustle</span></div>
+  <div class="if">
+    <input type="text" id="expSDesc" placeholder="e.g. Canva Pro, domain name, microphone"/>
+    <input type="number" id="expSAmt" placeholder="€ amount" min="0" step="0.01"/>
+    <input type="date" id="expSDt"/>
+    <button class="btn btn-sm" style="background:var(--red-lt);border:1.5px solid #F5C6C4;color:var(--red);" onclick="addExp('startup')">Log Startup Cost</button>
+  </div>
+  <div class="il" id="expSL"></div>
+</div>
+
+<!-- EXPENSES — RECURRING -->
+<div class="ib" style="margin-bottom:1.1rem;">
+  <div class="sec">🔁 Recurring Costs <span style="font-size:.72rem;font-weight:400;color:var(--mute);margin-left:.4rem;">Monthly / ongoing costs to maintain your side-hustle</span></div>
+  <div class="if">
+    <input type="text" id="expRDesc" placeholder="e.g. ActiveCampaign monthly, Podbean, Metricool"/>
+    <input type="number" id="expRAmt" placeholder="€ amount" min="0" step="0.01"/>
+    <input type="date" id="expRDt"/>
+    <button class="btn btn-sm" style="background:var(--red-lt);border:1.5px solid #F5C6C4;color:var(--red);" onclick="addExp('recurring')">Log Recurring Cost</button>
+  </div>
+  <div class="il" id="expRL"></div>
+</div>
+
+<!-- MONTHLY OVERVIEW -->
+<div class="ib" style="margin-bottom:1.1rem;">
+  <div class="sec">📅 Monthly Overview</div>
+  <div style="overflow-x:auto;">
+    <table id="monthlyTable" style="width:100%;border-collapse:collapse;font-size:.8rem;"></table>
+  </div>
+  <canvas id="roiChart" style="margin-top:1rem;max-height:220px;width:100%;display:none;"></canvas>
+</div>
+</div>
+
 
 <!-- ════ TOOLBOX ════ -->
 <div class="panel" id="panel-toolbox">
@@ -1835,10 +1873,16 @@ const LV_COLS=['#335f9f','#1e3d6e','#B87E00','#1B7A41','#5D3FD3','#335f9f'];
 const LV_LTS=['#eaf0f8','#d0e2f2','#FFF8E1','#E5F7ED','#F0EBFF','#eaf0f8'];
 const LV_NAMES=['Spark','Shield','Pivot','Flow','Tribe','Owner'];
 
+/* ── LOCAL DATE HELPER (timezone-safe) ── */
+function localDate(d){
+  const t=d||new Date();
+  return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');
+}
+
 /* ════ STATE ════ */
 const SK='cr_hero_v4';
 function dfS(){return{
-  lv:1,chk:{},ua:[],goals:[],inc:[],ref:{},monthly:'',vision:'',wins:'',lessons:'',questionsForE:'',
+  lv:1,chk:{},ua:[],goals:[],inc:[],exp:{startup:[],recurring:[]},ref:{},monthly:'',vision:'',wins:'',lessons:'',questionsForE:'',
   epListened:{},epMyVoices:{},epShared:{},
   subscriberEmail:'',subscriberName:'',subscribed:false,
   degree:'',uni:'',name:'',modules:[],lvMods:{},
@@ -1868,6 +1912,7 @@ function sw(el){
   if(el.dataset.t==='episodes'){rEps();}
   if(el.dataset.t==='toolbox'){rTools();}
   if(el.dataset.t==='reflect')rrf();
+  if(el.dataset.t==='income'){rInc();}
   if(el.dataset.t==='settings')rSettings();
 }
 function swTab(id){
@@ -1959,8 +2004,14 @@ function addUA(){
   S.ua.unshift(v);
   document.getElementById('uaI').value='';
   sv();rUA();
-  // Trigger achievement card for first badge
-  if(S.ua.length===1) triggerAchievementCard('unaible', v);
+  // First badge: achievement card (with Moments save via downloadAchCard flow)
+  if(S.ua.length===1){
+    triggerAchievementCard('unaible', v);
+  } else {
+    // Subsequent badges: show modal again (bypass the "already shown" guard)
+    showAchievementModal('unaible', ACHIEVEMENTS['unaible'], v);
+    levelConfetti(1);
+  }
 }
 function rmUA(i){S.ua.splice(i,1);sv();rUA();}
 function rUA(){document.getElementById('uaL').innerHTML=S.ua.map((b,i)=>`<div class="ub">🧠 ${b}<button onclick="rmUA(${i})">×</button></div>`).join('');}
@@ -1997,10 +2048,11 @@ function usePrm(btn,t){document.getElementById('rTx').value=t+'\n\n';document.ge
 function saveRef(){
   const wasEmpty = !S.ref[S.lv] || S.ref[S.lv].trim()===''
   S.ref[S.lv]=document.getElementById('rTx').value;sv();fls('rTx');
-  // First ever reflection
+  // First ever reflection triggers achievement card
   const totalRefs = Object.values(S.ref).filter(r=>r&&r.trim().length>10).length;
   if(wasEmpty && totalRefs===1) triggerAchievementCard('reflection');
 }
+// saveF works independently for monthly/vision/questions — always saves
 function saveF(k,id){S[k]=document.getElementById(id).value;sv();fls(id);}
 function fls(id){const el=document.getElementById(id);const o=el.style.borderColor;el.style.borderColor='#1B8A4A';setTimeout(()=>{el.style.borderColor=o;},1100);}
 function rrf(){
@@ -2011,26 +2063,228 @@ function rrf(){
 }
 
 /* ════ INCOME ════ */
+/* ════ INCOME & EXPENSES (Revenue & ROI Tab) ════ */
 function addInc(){
   const desc=document.getElementById('iDesc').value.trim();
   const amt=parseFloat(document.getElementById('iAmt').value);
-  const dt=document.getElementById('iDt').value||new Date().toISOString().slice(0,10);
+  const dt=document.getElementById('iDt').value||localDate();
   if(!desc||isNaN(amt)||amt<=0)return;
   S.inc.unshift({desc,amt,dt,id:Date.now()});
   document.getElementById('iDesc').value='';document.getElementById('iAmt').value='';
   sv();rInc();
-  if(S.lv===6&&S.inc.length===1)celebrate();
+  // Confetti + celebrate on every income entry
+  if(S.inc.length===1){
+    celebrate(); // first income: full celebration with badge reveal
+  } else {
+    levelConfetti(6); // subsequent income: confetti only
+  }
 }
 function rmInc(id){S.inc=S.inc.filter(i=>i.id!==id);sv();rInc();}
+
+function addExp(type){
+  const descId=type==='startup'?'expSDesc':'expRDesc';
+  const amtId=type==='startup'?'expSAmt':'expRAmt';
+  const dtId=type==='startup'?'expSDt':'expRDt';
+  const desc=document.getElementById(descId).value.trim();
+  const amt=parseFloat(document.getElementById(amtId).value);
+  const dt=document.getElementById(dtId).value||localDate();
+  if(!desc||isNaN(amt)||amt<=0)return;
+  if(!S.exp)S.exp={startup:[],recurring:[]};
+  S.exp[type].unshift({desc,amt,dt,id:Date.now()});
+  document.getElementById(descId).value='';document.getElementById(amtId).value='';
+  sv();rInc();
+}
+function rmExp(type,id){
+  if(!S.exp)S.exp={startup:[],recurring:[]};
+  S.exp[type]=S.exp[type].filter(e=>e.id!==id);
+  sv();rInc();
+}
+
 function rInc(){
-  const tot=S.inc.reduce((a,i)=>a+i.amt,0);
-  document.getElementById('incTot').textContent='€'+tot.toFixed(2);
-  document.getElementById('iL').innerHTML=S.inc.length?S.inc.map(i=>
+  if(!S.exp)S.exp={startup:[],recurring:[]};
+  const totalInc=S.inc.reduce((a,i)=>a+i.amt,0);
+  const totalStartup=(S.exp.startup||[]).reduce((a,e)=>a+e.amt,0);
+  const totalRecurring=(S.exp.recurring||[]).reduce((a,e)=>a+e.amt,0);
+  const totalExp=totalStartup+totalRecurring;
+  const netProfit=totalInc-totalExp;
+  const roiPct=totalExp>0?((netProfit/totalExp)*100):null;
+
+  // ── Summary cards ──
+  const summaryEl=document.getElementById('roiSummary');
+  if(summaryEl){
+    const cards=[
+      {n:'€'+totalInc.toFixed(2),l:'Total Income',c:'var(--green)'},
+      {n:'€'+totalExp.toFixed(2),l:'Total Expenses',c:'var(--red)'},
+      {n:(netProfit>=0?'+':'')+'€'+netProfit.toFixed(2),l:'Net Profit',c:netProfit>=0?'var(--green)':'var(--red)'},
+      {n:roiPct!==null?(roiPct>=0?'+':'')+roiPct.toFixed(0)+'%':'—',l:'ROI',c:roiPct===null?'var(--mute)':roiPct>=0?'var(--green)':'var(--red)'},
+    ];
+    summaryEl.innerHTML=cards.map(c=>
+      `<div class="st"><div class="st-n" style="color:${c.c};">${c.n}</div><div class="st-l">${c.l}</div></div>`
+    ).join('');
+  }
+
+  // ── Verdict banner ──
+  const verdictEl=document.getElementById('roiVerdict');
+  if(verdictEl){
+    if(totalInc===0&&totalExp===0){
+      verdictEl.style.display='none';
+    } else {
+      verdictEl.style.display='block';
+      let verdict,bg,col;
+      if(netProfit>0){
+        verdict='🟢 Positive — Your side-hustle is profitable. Every euro invested has returned more than it cost.';
+        bg='var(--green-lt)';col='var(--green)';
+      } else if(netProfit===0){
+        verdict='🟡 Break-even — Income matches expenses exactly. One more sale tips you into profit.';
+        bg='var(--yel-lt)';col='var(--yel-dk)';
+      } else {
+        verdict='🔵 Investing — You\'re ahead of costs. Keep building — the ROI grows as income scales.';
+        bg='var(--blue-lt)';col='var(--blue-dk)';
+      }
+      verdictEl.style.background=bg;
+      verdictEl.style.color=col;
+      verdictEl.style.border='1.5px solid '+col;
+      verdictEl.textContent=verdict;
+    }
+  }
+
+  // ── Income list ──
+  const iL=document.getElementById('iL');
+  if(iL) iL.innerHTML=S.inc.length?S.inc.map(i=>
     `<div class="ii"><span style="color:var(--mute);font-size:.73rem;">${i.dt}</span>
      <span style="flex:1;padding:0 .65rem;">${i.desc}</span>
      <span class="ia">€${i.amt.toFixed(2)}</span>
      <button class="id-btn" onclick="rmInc(${i.id})">×</button></div>`
   ).join(''):'<p class="sm mute" style="padding:.3rem 0;">No income logged yet. Your first euro is everything.</p>';
+
+  // ── Startup expense list ──
+  const expSL=document.getElementById('expSL');
+  if(expSL) expSL.innerHTML=(S.exp.startup||[]).length?(S.exp.startup).map(e=>
+    `<div class="ii"><span style="color:var(--mute);font-size:.73rem;">${e.dt}</span>
+     <span style="flex:1;padding:0 .65rem;">${e.desc}</span>
+     <span style="font-weight:700;color:var(--red);">−€${e.amt.toFixed(2)}</span>
+     <button class="id-btn" onclick="rmExp('startup',${e.id})">×</button></div>`
+  ).join(''):'<p class="sm mute" style="padding:.3rem 0;">No startup costs logged.</p>';
+
+  // ── Recurring expense list ──
+  const expRL=document.getElementById('expRL');
+  if(expRL) expRL.innerHTML=(S.exp.recurring||[]).length?(S.exp.recurring).map(e=>
+    `<div class="ii"><span style="color:var(--mute);font-size:.73rem;">${e.dt}</span>
+     <span style="flex:1;padding:0 .65rem;">${e.desc}</span>
+     <span style="font-weight:700;color:var(--red);">−€${e.amt.toFixed(2)}</span>
+     <button class="id-btn" onclick="rmExp('recurring',${e.id})">×</button></div>`
+  ).join(''):'<p class="sm mute" style="padding:.3rem 0;">No recurring costs logged.</p>';
+
+  // ── Monthly table & chart ──
+  rMonthly();
+}
+
+function rMonthly(){
+  if(!S.exp)S.exp={startup:[],recurring:[]};
+  // Collect all entries with dates
+  const allEntries=[];
+  S.inc.forEach(e=>allEntries.push({dt:e.dt,type:'income',amt:e.amt}));
+  (S.exp.startup||[]).forEach(e=>allEntries.push({dt:e.dt,type:'startup',amt:e.amt}));
+  (S.exp.recurring||[]).forEach(e=>allEntries.push({dt:e.dt,type:'recurring',amt:e.amt}));
+  if(allEntries.length===0){
+    const t=document.getElementById('monthlyTable');
+    if(t) t.innerHTML='<tr><td style="padding:.5rem;color:var(--mute);font-size:.8rem;">No data yet — log income or expenses to see your monthly overview.</td></tr>';
+    const cv=document.getElementById('roiChart');
+    if(cv) cv.style.display='none';
+    return;
+  }
+  // Group by YYYY-MM
+  const months={};
+  allEntries.forEach(e=>{
+    const m=e.dt?e.dt.slice(0,7):'unknown';
+    if(!months[m]) months[m]={income:0,expenses:0};
+    if(e.type==='income') months[m].income+=e.amt;
+    else months[m].expenses+=e.amt;
+  });
+  const sortedMonths=Object.keys(months).sort();
+  let runningNet=0;
+  const rows=sortedMonths.map(m=>{
+    const inc=months[m].income;
+    const exp=months[m].expenses;
+    const net=inc-exp;
+    runningNet+=net;
+    const netCol=net>=0?'var(--green)':'var(--red)';
+    const runCol=runningNet>=0?'var(--green)':'var(--red)';
+    return `<tr style="border-bottom:0.5px solid var(--bdr);">
+      <td style="padding:.45rem .55rem;font-weight:600;">${m}</td>
+      <td style="padding:.45rem .55rem;color:var(--green);">+€${inc.toFixed(2)}</td>
+      <td style="padding:.45rem .55rem;color:var(--red);">−€${exp.toFixed(2)}</td>
+      <td style="padding:.45rem .55rem;color:${netCol};font-weight:700;">${net>=0?'+':''}€${net.toFixed(2)}</td>
+      <td style="padding:.45rem .55rem;color:${runCol};font-weight:700;">${runningNet>=0?'+':''}€${runningNet.toFixed(2)}</td>
+    </tr>`;
+  });
+  const t=document.getElementById('monthlyTable');
+  if(t){
+    t.innerHTML=`<thead><tr style="background:var(--blue-lt);">
+      <th style="padding:.45rem .55rem;text-align:left;font-size:.72rem;color:var(--blue-dk);">Month</th>
+      <th style="padding:.45rem .55rem;text-align:left;font-size:.72rem;color:var(--green);">Income</th>
+      <th style="padding:.45rem .55rem;text-align:left;font-size:.72rem;color:var(--red);">Expenses</th>
+      <th style="padding:.45rem .55rem;text-align:left;font-size:.72rem;color:var(--txt);">Net</th>
+      <th style="padding:.45rem .55rem;text-align:left;font-size:.72rem;color:var(--txt);">Running Total</th>
+    </tr></thead><tbody>${rows.join('')}</tbody>`;
+  }
+  // ── Bar chart ──
+  const cv=document.getElementById('roiChart');
+  if(!cv) return;
+  cv.style.display='block';
+  const W=cv.offsetWidth||600,H=220;
+  cv.width=W*window.devicePixelRatio||W;
+  cv.height=H*window.devicePixelRatio||H;
+  cv.style.width=W+'px';cv.style.height=H+'px';
+  const ctx=cv.getContext('2d');
+  ctx.scale(window.devicePixelRatio||1,window.devicePixelRatio||1);
+  ctx.clearRect(0,0,W,H);
+  const n=sortedMonths.length;
+  const barW=Math.min(40,Math.floor((W-60)/(n*3+1)));
+  const gap=barW;
+  const pad={l:45,r:10,t:10,b:30};
+  const chartH=H-pad.t-pad.b;
+  // Find max for scale
+  let maxVal=0;
+  sortedMonths.forEach(m=>{
+    maxVal=Math.max(maxVal,months[m].income,months[m].expenses);
+  });
+  if(maxVal===0) maxVal=10;
+  const scale=chartH/maxVal;
+  // Draw bars
+  sortedMonths.forEach((m,i)=>{
+    const inc=months[m].income;
+    const exp=months[m].expenses;
+    const x=pad.l+i*(barW*2+gap*2);
+    // Income bar
+    const incH=Math.round(inc*scale);
+    ctx.fillStyle='#1B8A4A';
+    ctx.fillRect(x,pad.t+chartH-incH,barW,incH);
+    // Expense bar
+    const expH=Math.round(exp*scale);
+    ctx.fillStyle='#C0392B';
+    ctx.fillRect(x+barW+2,pad.t+chartH-expH,barW,expH);
+    // Month label
+    ctx.fillStyle='#5A6E88';
+    ctx.font='9px sans-serif';
+    ctx.textAlign='center';
+    ctx.fillText(m.slice(5),x+barW,H-pad.b+12);
+  });
+  // Y axis
+  ctx.strokeStyle='var(--bdr,#c8d8ec)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l,pad.t+chartH);
+  ctx.lineTo(W-pad.r,pad.t+chartH);ctx.stroke();
+  // Y labels
+  ctx.fillStyle='#5A6E88';ctx.font='9px sans-serif';ctx.textAlign='right';
+  [0,.5,1].forEach(f=>{
+    const y=pad.t+chartH-f*chartH;
+    ctx.fillText('€'+(f*maxVal).toFixed(0),pad.l-4,y+3);
+  });
+  // Legend
+  ctx.fillStyle='#1B8A4A';ctx.fillRect(W-90,8,10,10);
+  ctx.fillStyle='#5A6E88';ctx.font='10px sans-serif';ctx.textAlign='left';ctx.fillText('Income',W-77,17);
+  ctx.fillStyle='#C0392B';ctx.fillRect(W-90,22,10,10);
+  ctx.fillStyle='#5A6E88';ctx.fillText('Expenses',W-77,31);
 }
 
 /* ════ CELEBRATE ════ */
@@ -2314,8 +2568,12 @@ function saveCanvas(){
   ['prob','ica','adv','rev','chan','uai'].forEach(k=>{
     const el=document.getElementById('cv-'+k);if(el)S.canvas[k]=el.value;
   });sv();fls('cv-prob');
-  // First canvas save
-  if(wasEmpty) triggerAchievementCard('canvas');
+  // First canvas save triggers achievement card; subsequent saves show confetti only
+  if(wasEmpty){
+    triggerAchievementCard('canvas');
+  } else {
+    levelConfetti(1);
+  }
 }
 function exportCanvas(){
   const lines=['=== CreatingReorganized Business Canvas ===',
@@ -2340,10 +2598,19 @@ function rShip(){
 }
 function togShip(i){
   if(!S.shipDone)S.shipDone={};
+  const wasUnchecked = !S.shipDone[i];
   S.shipDone[i]=!S.shipDone[i];sv();rShip();
-  // First ship task completed
-  if(S.shipDone[i] && Object.values(S.shipDone).filter(Boolean).length===1)
-    triggerAchievementCard('ship');
+  // Celebration card + confetti every time a task is newly checked
+  if(wasUnchecked && S.shipDone[i]){
+    const total=Object.values(S.shipDone).filter(Boolean).length;
+    if(total===1){
+      triggerAchievementCard('ship');
+    } else {
+      // Subsequent ships: show modal without the "already shown" guard
+      showAchievementModal('ship', ACHIEVEMENTS['ship'], '');
+      levelConfetti(1);
+    }
+  }
 }
 function addShip(){
   const v=document.getElementById('shipIn').value.trim();if(!v)return;
@@ -2353,7 +2620,7 @@ function addShip(){
 function addIdea(){
   const v=document.getElementById('ideaIn').value.trim();if(!v)return;
   if(!S.ideaLog)S.ideaLog=[];
-  S.ideaLog.unshift({t:v,id:Date.now(),date:new Date().toISOString().slice(0,10)});
+  S.ideaLog.unshift({t:v,id:Date.now(),date:localDate()});
   document.getElementById('ideaIn').value='';sv();rIdeaLog();
 }
 function rmIdea(id){S.ideaLog=S.ideaLog.filter(i=>i.id!==id);sv();rIdeaLog();}
@@ -2461,8 +2728,12 @@ function rQ(){const q=QS[qI];document.getElementById('qT').textContent='"'+q.t+'
 
 /* ════ INIT ════ */
 function init(){
+  if(!S.exp) S.exp={startup:[],recurring:[]};
   rHero();rLvls();rDet();rPrm();rUA();rGl();rInc();rEps();rTools();rIdeation();renderNBA();rProtoGrid();
-  document.getElementById('iDt').value=new Date().toISOString().slice(0,10);
+  const today=localDate();
+  document.getElementById('iDt').value=today;
+  const expSDt=document.getElementById('expSDt');if(expSDt)expSDt.value=today;
+  const expRDt=document.getElementById('expRDt');if(expRDt)expRDt.value=today;
   if(S.inc.length>0&&S.lv===6)document.getElementById('fpB').style.display='block';
 }
 /* init moved to end */
@@ -2717,7 +2988,7 @@ function shareLinkedIn() {
 function shareInstagram() {
   copyCaption();
   setTimeout(() => {
-    alert('Caption copied to clipboard! 📋\n\nOpen Instagram, create a post, paste the caption, and attach your downloaded image.');
+    alert('Caption copied to clipboard! 📋\n\n1️⃣ Download the card first (tap "Download Card")\n2️⃣ Open Instagram and create a new post\n3️⃣ Upload the saved card image from your camera roll\n4️⃣ Paste the caption\n5️⃣ Tag @postdoctransformation & @profdreleonore 🎉');
     window.open('https://www.instagram.com', '_blank');
   }, 350);
 }
@@ -2812,10 +3083,12 @@ function applyDark(on) {
 
 /* ════ STREAK ════ */
 function updateStreak() {
-  const today = new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  const today = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  const yest = new Date(now); yest.setDate(yest.getDate() - 1);
+  const yesterday = `${yest.getFullYear()}-${String(yest.getMonth()+1).padStart(2,'0')}-${String(yest.getDate()).padStart(2,'0')}`;
   const last = localStorage.getItem('cr_streak_last') || '';
   let streak = parseInt(localStorage.getItem('cr_streak_count') || '0');
-  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
   if (last === today) {
     // already visited today, keep streak
   } else if (last === yesterday) {
@@ -2897,13 +3170,16 @@ function getNBA() {
   // Find first unchecked milestone in current level
   const nextMs = lv.ms.find(m => !S.chk[m.id]);
   if (nextMs) {
-    const epNum = String(lv.epStart || ((S.lv-1)*4+1)).padStart(4,'0');
+    const epStart = lv.epStart || ((S.lv-1)*4+1);
+    const epNum = String(epStart).padStart(4,'0');
+    const epUrl = 'https://postdoctransformation.ac-page.com/creatingreorganized_show' + epNum;
     return {
       icon: '🎯',
       label: 'Your next milestone',
       text: nextMs.t,
-      action: `Listen to Episode ${(S.lv-1)*4+1} first`,
-      tab: 'journey',
+      action: 'Listen to Episode ' + epStart + ' first',
+      tab: 'episodes',
+      url: epUrl,
     };
   }
   // All milestones done in current level
@@ -2914,6 +3190,7 @@ function getNBA() {
       text: `Ready for Level ${S.lv + 1}: ${LVS[S.lv].name}`,
       action: 'Go to next level →',
       tab: 'journey',
+      url: null,
     };
   }
   // All done
@@ -2921,21 +3198,25 @@ function getNBA() {
     icon: '🏆',
     label: 'Future-Proof Captain',
     text: 'Log your first income and unlock your final badge!',
-    action: 'Go to Income →',
+    action: 'Go to Revenue →',
     tab: 'income',
+    url: null,
   };
 }
 function renderNBA() {
   const el = document.getElementById('nbaPanel');
   if (!el) return;
   const nba = getNBA();
+  const btnAction = nba.url
+    ? `onclick="window.open('${nba.url}','_blank')"`
+    : `onclick="swTab('${nba.tab}')"`;
   el.innerHTML = `<div class="nba">
     <div class="nba-icon">${nba.icon}</div>
     <div style="flex:1;">
       <div class="nba-label">${nba.label}</div>
       <div class="nba-text">${nba.text}</div>
     </div>
-    <button class="nba-btn" onclick="swTab('${nba.tab}')">${nba.action}</button>
+    <button class="nba-btn" ${btnAction}>${nba.action}</button>
   </div>`;
 }
 
@@ -3191,6 +3472,21 @@ function downloadEqCard() {
   if (!cv) return;
   const dataUrl = cv.toDataURL('image/png');
   const fname = 'CreatingReorganized_Episode' + (currentEqEp ? currentEqEp.n : 'X') + '_insight.png';
+
+  // Save to Moments gallery
+  const moment = {
+    id: Date.now(),
+    trig: 'ep_insight',
+    title: 'Episode ' + (currentEqEp ? currentEqEp.n : '') + ' Insight',
+    fmt: 'portrait',
+    date: new Date().toLocaleDateString('en-GB'),
+    data: dataUrl,
+  };
+  savedMoments.unshift(moment);
+  if (savedMoments.length > 30) savedMoments.pop();
+  localStorage.setItem('cr_moments_v1', JSON.stringify(savedMoments));
+  renderGallery();
+
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   if (isMobile) {
     const win = window.open();
@@ -3226,7 +3522,7 @@ function shareEqLinkedIn() {
 function shareEqInstagram() {
   navigator.clipboard.writeText(getEqCaption()).catch(()=>{});
   setTimeout(()=>{
-    alert('Caption copied! 📋\n\nDownload the card first, then open Instagram and paste your caption.');
+    alert('Caption copied! 📋\n\n1️⃣ Download the card first (tap "Download Card")\n2️⃣ Open Instagram and create a new post\n3️⃣ Upload the saved card image from your camera roll\n4️⃣ Paste the caption\n5️⃣ Tag @postdoctransformation & @profdreleonore 🎉');
     window.open('https://www.instagram.com','_blank');
   }, 200);
 }
@@ -3279,8 +3575,20 @@ function openReportInNewTab() {
   });
 
   // Build income HTML
-  let incHtml = '';
+  if(!S.exp) S.exp={startup:[],recurring:[]};
+  const totalSt=(S.exp.startup||[]).reduce((a,e)=>a+e.amt,0);
+  const totalRe=(S.exp.recurring||[]).reduce((a,e)=>a+e.amt,0);
+  const totalExp=totalSt+totalRe;
+  const netProfit=totalInc-totalExp;
+  const roiPct=totalExp>0?((netProfit/totalExp)*100):null;
+  let incHtml = `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px;">
+    <div style="background:#E5F7ED;border-radius:6px;padding:8px;text-align:center;"><div style="font-weight:800;color:#1B8A4A;font-size:14px;">€${totalInc.toFixed(2)}</div><div style="font-size:9px;color:#5A6E88;">Total Income</div></div>
+    <div style="background:#FDECEA;border-radius:6px;padding:8px;text-align:center;"><div style="font-weight:800;color:#C0392B;font-size:14px;">€${totalExp.toFixed(2)}</div><div style="font-size:9px;color:#5A6E88;">Total Expenses</div></div>
+    <div style="background:${netProfit>=0?'#E5F7ED':'#FDECEA'};border-radius:6px;padding:8px;text-align:center;"><div style="font-weight:800;color:${netProfit>=0?'#1B8A4A':'#C0392B'};font-size:14px;">${netProfit>=0?'+':''}€${netProfit.toFixed(2)}</div><div style="font-size:9px;color:#5A6E88;">Net Profit</div></div>
+    <div style="background:${roiPct===null?'#F0F4F8':roiPct>=0?'#E5F7ED':'#FDECEA'};border-radius:6px;padding:8px;text-align:center;"><div style="font-weight:800;color:${roiPct===null?'#5A6E88':roiPct>=0?'#1B8A4A':'#C0392B'};font-size:14px;">${roiPct!==null?(roiPct>=0?'+':'')+roiPct.toFixed(0)+'%':'—'}</div><div style="font-size:9px;color:#5A6E88;">ROI</div></div>
+  </div>`;
   if (S.inc && S.inc.length > 0) {
+    incHtml += '<div style="font-weight:700;font-size:11px;color:#335f9f;margin-bottom:4px;">Income</div>';
     S.inc.forEach(i => {
       incHtml += `<div style="display:flex;justify-content:space-between;padding:4px 8px;border-bottom:1px solid #eaf0f8;font-size:12px;">
         <span style="color:#5A6E88;">${i.dt}</span>
@@ -3288,10 +3596,16 @@ function openReportInNewTab() {
         <span style="font-weight:700;color:#1B8A4A;">€${i.amt.toFixed(2)}</span>
       </div>`;
     });
-    incHtml += `<div style="text-align:right;padding:6px 8px;font-weight:800;color:#335f9f;font-size:13px;">Total: €${totalInc.toFixed(2)}</div>`;
-  } else {
-    incHtml = '<p style="color:#5A6E88;font-size:12px;padding:4px 8px;">No income logged yet.</p>';
   }
+  if((S.exp.startup||[]).length>0){
+    incHtml+='<div style="font-weight:700;font-size:11px;color:#C0392B;margin-top:8px;margin-bottom:4px;">Startup Costs</div>';
+    S.exp.startup.forEach(e=>{incHtml+=`<div style="display:flex;justify-content:space-between;padding:4px 8px;border-bottom:1px solid #eaf0f8;font-size:12px;"><span style="color:#5A6E88;">${e.dt}</span><span style="flex:1;padding:0 12px;">${e.desc}</span><span style="font-weight:700;color:#C0392B;">−€${e.amt.toFixed(2)}</span></div>`;});
+  }
+  if((S.exp.recurring||[]).length>0){
+    incHtml+='<div style="font-weight:700;font-size:11px;color:#C0392B;margin-top:8px;margin-bottom:4px;">Recurring Costs</div>';
+    S.exp.recurring.forEach(e=>{incHtml+=`<div style="display:flex;justify-content:space-between;padding:4px 8px;border-bottom:1px solid #eaf0f8;font-size:12px;"><span style="color:#5A6E88;">${e.dt}</span><span style="flex:1;padding:0 12px;">${e.desc}</span><span style="font-weight:700;color:#C0392B;">−€${e.amt.toFixed(2)}</span></div>`;});
+  }
+  if(!S.inc.length&&!totalExp) incHtml='<p style="color:#5A6E88;font-size:12px;padding:4px 8px;">No revenue data yet.</p>';
 
   // Build badges HTML
   const badgesHtml = (S.ua || []).length > 0
@@ -3544,18 +3858,33 @@ function populatePdfReport() {
   // Income
   const prInc = document.getElementById('pr-income');
   if (prInc) {
-    if (!S.inc || S.inc.length === 0) {
-      prInc.innerHTML = '<p style="font-size:.8rem;color:var(--mute);">No income logged yet.</p>';
-    } else {
-      const total = S.inc.reduce((a, i) => a + i.amt, 0);
-      prInc.innerHTML = S.inc.map(i =>
-        `<div style="display:flex;justify-content:space-between;align-items:center;padding:.35rem .5rem;border-bottom:1px solid #D5E2F0;font-size:.8rem;color:#16243A;">
-          <span style="color:var(--mute);font-size:.72rem;">${i.dt}</span>
-          <span style="flex:1;padding:0 .75rem;">${i.desc}</span>
-          <span style="font-weight:700;color:var(--green);">€${i.amt.toFixed(2)}</span>
-        </div>`
-      ).join('') + `<div style="display:flex;justify-content:flex-end;padding:.5rem 0;font-weight:800;font-size:.9rem;color:#335f9f;">Total: €${total.toFixed(2)}</div>`;
+    if(!S.exp) S.exp={startup:[],recurring:[]};
+    const totalIn = S.inc.reduce((a, i) => a + i.amt, 0);
+    const totalSt = (S.exp.startup||[]).reduce((a,e)=>a+e.amt,0);
+    const totalRe = (S.exp.recurring||[]).reduce((a,e)=>a+e.amt,0);
+    const totalEx = totalSt+totalRe;
+    const net = totalIn-totalEx;
+    const roiPct = totalEx>0?((net/totalEx)*100):null;
+    let html = `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px;">
+      <div style="background:#E5F7ED;border-radius:6px;padding:8px;text-align:center;"><div style="font-weight:800;color:#1B8A4A;">€${totalIn.toFixed(2)}</div><div style="font-size:9px;color:#5A6E88;">Total Income</div></div>
+      <div style="background:#FDECEA;border-radius:6px;padding:8px;text-align:center;"><div style="font-weight:800;color:#C0392B;">€${totalEx.toFixed(2)}</div><div style="font-size:9px;color:#5A6E88;">Total Expenses</div></div>
+      <div style="background:${net>=0?'#E5F7ED':'#FDECEA'};border-radius:6px;padding:8px;text-align:center;"><div style="font-weight:800;color:${net>=0?'#1B8A4A':'#C0392B'};">${net>=0?'+':''}€${net.toFixed(2)}</div><div style="font-size:9px;color:#5A6E88;">Net Profit</div></div>
+      <div style="background:${roiPct===null?'#F0F4F8':roiPct>=0?'#E5F7ED':'#FDECEA'};border-radius:6px;padding:8px;text-align:center;"><div style="font-weight:800;color:${roiPct===null?'#5A6E88':roiPct>=0?'#1B8A4A':'#C0392B'};">${roiPct!==null?(roiPct>=0?'+':'')+roiPct.toFixed(0)+'%':'—'}</div><div style="font-size:9px;color:#5A6E88;">ROI</div></div>
+    </div>`;
+    if(S.inc.length>0){
+      html+=`<div style="font-weight:700;font-size:.76rem;color:#335f9f;margin-bottom:4px;">Income</div>`;
+      html+=S.inc.map(i=>`<div style="display:flex;justify-content:space-between;padding:3px 6px;border-bottom:1px solid #D5E2F0;font-size:.78rem;"><span style="color:#5A6E88;">${i.dt}</span><span style="flex:1;padding:0 8px;">${i.desc}</span><span style="font-weight:700;color:#1B8A4A;">€${i.amt.toFixed(2)}</span></div>`).join('');
     }
+    if((S.exp.startup||[]).length>0){
+      html+=`<div style="font-weight:700;font-size:.76rem;color:#C0392B;margin-top:8px;margin-bottom:4px;">Startup Costs</div>`;
+      html+=(S.exp.startup).map(e=>`<div style="display:flex;justify-content:space-between;padding:3px 6px;border-bottom:1px solid #D5E2F0;font-size:.78rem;"><span style="color:#5A6E88;">${e.dt}</span><span style="flex:1;padding:0 8px;">${e.desc}</span><span style="font-weight:700;color:#C0392B;">−€${e.amt.toFixed(2)}</span></div>`).join('');
+    }
+    if((S.exp.recurring||[]).length>0){
+      html+=`<div style="font-weight:700;font-size:.76rem;color:#C0392B;margin-top:8px;margin-bottom:4px;">Recurring Costs</div>`;
+      html+=(S.exp.recurring).map(e=>`<div style="display:flex;justify-content:space-between;padding:3px 6px;border-bottom:1px solid #D5E2F0;font-size:.78rem;"><span style="color:#5A6E88;">${e.dt}</span><span style="flex:1;padding:0 8px;">${e.desc}</span><span style="font-weight:700;color:#C0392B;">−€${e.amt.toFixed(2)}</span></div>`).join('');
+    }
+    if(!S.inc.length&&!totalEx) html='<p style="font-size:.8rem;color:var(--mute);">No revenue data yet.</p>';
+    prInc.innerHTML = html;
   }
 
   // Reflections
