@@ -3388,8 +3388,15 @@ function saveEqVoice() {
   if (!S.epMyVoices) S.epMyVoices = {};
   S.epMyVoices[currentEqEp.n] = text;
   sv();
-  rEps(); // refresh episode cards
-  closeEqModal();
+  rEps(); // refresh episode cards in background
+  // Flash confirmation — do NOT close modal so Download Card still works
+  const btn = document.querySelector('[onclick="saveEqVoice()"]');
+  if (btn) {
+    const orig = btn.textContent;
+    btn.textContent = '✅ Saved!';
+    btn.disabled = true;
+    setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 1800);
+  }
 }
 
 function generateEqCard() {
@@ -3538,6 +3545,18 @@ function getEqCaption() {
 function downloadEqCard() {
   const cv = document.getElementById('eqCanvas');
   if (!cv) return;
+  // If card not yet generated, generate it now from current insight text
+  if (cv.style.display === 'none' || cv.width === 0) {
+    const text = document.getElementById('eqQuoteText') ? document.getElementById('eqQuoteText').value.trim() : '';
+    if (!text || !currentEqEp) {
+      alert('Please generate the share card first by clicking "Generate Share Card".');
+      return;
+    }
+    drawEqCanvas(text);
+    // Wait one frame for canvas to render then download
+    requestAnimationFrame(() => downloadEqCard());
+    return;
+  }
   const dataUrl = cv.toDataURL('image/png');
   const fname = 'CreatingReorganized_Episode' + (currentEqEp ? currentEqEp.n : 'X') + '_insight.png';
 
