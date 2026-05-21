@@ -1205,10 +1205,11 @@ select{cursor:pointer;}
   <span style="color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;letter-spacing:.3px;">CreatingReorganized</span>
   <span style="color:rgba(255,255,255,.55);font-size:.72rem;margin-left:auto;">Side-Hustle Hero's Journey</span>
 </div>
-  <div class="fp" id="fpB">
+  <div class="fp" id="fpB" style="display:none;">
     <div style="font-size:2rem;">🏆</div>
     <h2>Future-Proof Captain — Unlocked!</h2>
     <p>You logged your first income at Level 6. Your side-hustle is real. The world needs what only you can offer.</p>
+    <button onclick="document.getElementById('fpB').style.display='none';" style="margin-top:.6rem;background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.4);color:#fff;padding:.3rem .9rem;border-radius:6px;cursor:pointer;font-size:.78rem;">✓ Got it!</button>
   </div>
   <div class="gb">
     <div class="sec">🎯 Self-Chosen Goals</div>
@@ -1410,16 +1411,24 @@ select{cursor:pointer;}
   </div>
   <button class="btn btn-sm btn-y mt5" onclick="showSnippet()" style="margin-bottom:1rem;">📣 Generate My Progress Post</button>
 
+  <!-- Completed Goals in Overview -->
+  <div id="ovGoals" style="margin-bottom:1rem;display:none;">
+    <div class="rl" style="margin-bottom:.4rem;">🎯 Goals Completed</div>
+    <div id="ovGoalsList" style="display:flex;flex-direction:column;gap:.3rem;"></div>
+  </div>
+
   <div class="rg">
     <div class="rc">
       <div class="rl">🏆 This Week's Wins</div>
-      <textarea id="wTx" rows="4" placeholder="List 3 things that went well this week…"></textarea>
-      <button class="btn btn-sm mt5" onclick="saveF('wins','wTx')">Save</button>
+      <textarea id="wTx" rows="3" placeholder="What went well this week?…"></textarea>
+      <button class="btn btn-sm mt5" onclick="addWin()">Add Win</button>
+      <div id="winsList" style="margin-top:.6rem;display:flex;flex-direction:column;gap:.35rem;"></div>
     </div>
     <div class="rc">
       <div class="rl">💡 Lessons (Reframed Failures)</div>
-      <textarea id="lTx" rows="4" placeholder="One 'failure' that is actually a lesson…"></textarea>
-      <button class="btn btn-sm mt5" onclick="saveF('lessons','lTx')">Save</button>
+      <textarea id="lTx" rows="3" placeholder="One 'failure' that is actually a lesson…"></textarea>
+      <button class="btn btn-sm mt5" onclick="addLesson()">Add Lesson</button>
+      <div id="lessonsList" style="margin-top:.6rem;display:flex;flex-direction:column;gap:.35rem;"></div>
     </div>
   </div>
   <div class="rc mt1">
@@ -1882,7 +1891,7 @@ function localDate(d){
 /* ════ STATE ════ */
 const SK='cr_hero_v4';
 function dfS(){return{
-  lv:1,chk:{},ua:[],goals:[],inc:[],exp:{startup:[],recurring:[]},ref:{},monthly:'',vision:'',wins:'',lessons:'',questionsForE:'',
+  lv:1,chk:{},ua:[],goals:[],inc:[],exp:{startup:[],recurring:[]},ref:{},monthly:'',vision:'',wins:[],lessons:[],questionsForE:'',
   epListened:{},epMyVoices:{},epShared:{},
   subscriberEmail:'',subscriberName:'',subscribed:false,
   degree:'',uni:'',name:'',modules:[],lvMods:{},
@@ -2602,12 +2611,19 @@ function togShip(i){
   S.shipDone[i]=!S.shipDone[i];sv();rShip();
   // Celebration card + confetti every time a task is newly checked
   if(wasUnchecked && S.shipDone[i]){
+    // Get the task label to personalise the card
+    const allTasks=[...DEFAULT_SHIP,...(S.shipCustom||[])];
+    const taskLabel = allTasks[i] || 'Something shipped!';
     const total=Object.values(S.shipDone).filter(Boolean).length;
     if(total===1){
-      triggerAchievementCard('ship');
+      // First ship: use triggerAchievementCard but pass task label
+      if(shownAchievements.has('ship')) markAchievementShown('ship'); // reset so it shows
+      markAchievementShown('ship');
+      showAchievementModal('ship', ACHIEVEMENTS['ship'], taskLabel);
+      levelConfetti(1);
     } else {
-      // Subsequent ships: show modal without the "already shown" guard
-      showAchievementModal('ship', ACHIEVEMENTS['ship'], '');
+      // Subsequent ships: always show modal with this task's label
+      showAchievementModal('ship', ACHIEVEMENTS['ship'], taskLabel);
       levelConfetti(1);
     }
   }
@@ -2657,8 +2673,60 @@ function rov(){
       <span style="font-size:.71rem;color:var(--mute);margin-left:auto;">${lv.ep}</span>
     </div>`).join('');
 
-  if(S.wins)document.getElementById('wTx').value=S.wins;
-  if(S.lessons)document.getElementById('lTx').value=S.lessons;
+  // Migrate old string wins/lessons to arrays
+  if(typeof S.wins==='string'){S.wins=S.wins.trim()?[{t:S.wins,id:Date.now(),date:''}]:[];}
+  if(typeof S.lessons==='string'){S.lessons=S.lessons.trim()?[{t:S.lessons,id:Date.now()+1,date:''}]:[];}
+  rWinsLessons();
+
+  // Completed goals in Overview
+  const doneGoals=(S.goals||[]).filter(g=>g.d);
+  const ovGoals=document.getElementById('ovGoals');
+  const ovGoalsList=document.getElementById('ovGoalsList');
+  if(ovGoals&&ovGoalsList){
+    if(doneGoals.length>0){
+      ovGoals.style.display='block';
+      ovGoalsList.innerHTML=doneGoals.map(g=>
+        `<div style="display:flex;align-items:center;gap:.5rem;padding:.35rem .55rem;background:var(--green-lt,#E5F7ED);border-radius:6px;font-size:.8rem;">
+          <span style="color:var(--green,#1B8A4A);font-weight:700;">✓</span>
+          <span style="flex:1;text-decoration:line-through;color:var(--mute);">${g.t}</span>
+        </div>`
+      ).join('');
+    } else {
+      ovGoals.style.display='none';
+    }
+  }
+}
+
+/* ── Wins & Lessons log ── */
+function addWin(){
+  const v=document.getElementById('wTx').value.trim();if(!v)return;
+  if(!Array.isArray(S.wins))S.wins=[];
+  S.wins.unshift({t:v,id:Date.now(),date:localDate()});
+  document.getElementById('wTx').value='';sv();rWinsLessons();
+}
+function addLesson(){
+  const v=document.getElementById('lTx').value.trim();if(!v)return;
+  if(!Array.isArray(S.lessons))S.lessons=[];
+  S.lessons.unshift({t:v,id:Date.now(),date:localDate()});
+  document.getElementById('lTx').value='';sv();rWinsLessons();
+}
+function rmWin(id){S.wins=S.wins.filter(w=>w.id!==id);sv();rWinsLessons();}
+function rmLesson(id){S.lessons=S.lessons.filter(l=>l.id!==id);sv();rWinsLessons();}
+function rWinsLessons(){
+  if(!Array.isArray(S.wins))S.wins=[];
+  if(!Array.isArray(S.lessons))S.lessons=[];
+  const wEl=document.getElementById('winsList');
+  const lEl=document.getElementById('lessonsList');
+  if(wEl) wEl.innerHTML=S.wins.length?S.wins.map(w=>
+    `<div class="ii"><span style="color:var(--mute);font-size:.71rem;">${w.date||''}</span>
+     <span style="flex:1;padding:0 .55rem;font-size:.8rem;">${w.t}</span>
+     <button class="id-btn" onclick="rmWin(${w.id})">×</button></div>`
+  ).join(''):'<p class="sm mute">No wins logged yet — add your first one!</p>';
+  if(lEl) lEl.innerHTML=S.lessons.length?S.lessons.map(l=>
+    `<div class="ii"><span style="color:var(--mute);font-size:.71rem;">${l.date||''}</span>
+     <span style="flex:1;padding:0 .55rem;font-size:.8rem;">${l.t}</span>
+     <button class="id-btn" onclick="rmLesson(${l.id})">×</button></div>`
+  ).join(''):'<p class="sm mute">No lessons logged yet — reframe one failure!</p>';
 }
 
 /* ════ SETTINGS ════ */
@@ -2729,12 +2797,12 @@ function rQ(){const q=QS[qI];document.getElementById('qT').textContent='"'+q.t+'
 /* ════ INIT ════ */
 function init(){
   if(!S.exp) S.exp={startup:[],recurring:[]};
-  rHero();rLvls();rDet();rPrm();rUA();rGl();rInc();rEps();rTools();rIdeation();renderNBA();rProtoGrid();
+  rHero();rLvls();rDet();rPrm();rUA();rGl();rInc();rEps();rTools();rIdeation();renderNBA();rProtoGrid();rWinsLessons();
   const today=localDate();
   document.getElementById('iDt').value=today;
   const expSDt=document.getElementById('expSDt');if(expSDt)expSDt.value=today;
   const expRDt=document.getElementById('expRDt');if(expRDt)expRDt.value=today;
-  if(S.inc.length>0&&S.lv===6)document.getElementById('fpB').style.display='block';
+  // fpB banner removed from init — it only fires via celebrate() on first income log
 }
 /* init moved to end */
 
@@ -3990,6 +4058,7 @@ const ACHIEVEMENTS = {
     sub: 'Done beats perfect. Every single time.',
     col1: '#1e3d6e', col2: '#335f9f', accent: '#e9b25d',
     illustration: 'rocket',
+    useTaskLabel: true,  // render the specific task name on the card
   },
   // Streak milestones
   streak3: {
@@ -4179,7 +4248,7 @@ function drawAchievementCard(key, ach, badgeText) {
     ctx.font = `900 ${Math.round(W*0.068)}px Arial, sans-serif`;
     wrapText(ctx, ach.headline, W/2, H*0.60, W*0.82, Math.round(W*0.082));
 
-    // Badge text (for Un-AI-able cards)
+    // Badge/task text for Un-AI-able and Ship cards
     if (badgeText) {
       ctx.fillStyle = ach.accent === '#fff' ? '#fff' : ach.accent;
       ctx.font = `bold ${Math.round(W*0.034)}px Arial, sans-serif`;
