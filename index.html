@@ -4722,11 +4722,13 @@ function submitSubscribe() {
     }
   })
   .catch(err => {
-    // CORS may block the response even on success — treat as likely success
-    // Make webhooks return 200 but CORS headers may be missing
-    S.subscribed = true; sv();
-    showSubSuccess();
-    console.log('Subscribe note:', err.message, '(likely CORS — subscription may still have succeeded)');
+    // Fetch failed — network issue, browser block, or CORS. Show honest error so user can retry.
+    console.log('Subscribe error:', err.message);
+    if (status) {
+      status.className = 'sub-status err';
+      status.textContent = '⚠️ Something went wrong — your subscription did not go through. Please try again, or email eleonore@postdoctransformation.com to be added manually.';
+    }
+    if (btn) { btn.disabled = false; btn.textContent = '💛 Join Prof. Dr. E\'s Inner Circle'; }
   });
 }
 
