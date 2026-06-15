@@ -172,6 +172,13 @@ select{cursor:pointer;}
 
 /* ── EPISODES ── */
 .eg{display:grid;grid-template-columns:repeat(auto-fill,minmax(222px,1fr));gap:.7rem;margin-bottom:1.1rem;}
+.ep-season{background:var(--bg);border:1.5px solid var(--bdr);border-radius:var(--r);padding:.9rem;margin-bottom:1rem;}
+.ep-season-head{display:flex;align-items:flex-start;justify-content:space-between;gap:.75rem;margin-bottom:.75rem;flex-wrap:wrap;}
+.ep-season-kicker{font-size:.66rem;font-weight:800;color:var(--blue);text-transform:uppercase;letter-spacing:.55px;margin-bottom:.18rem;}
+.ep-season-title{font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:800;color:var(--blue-dk);line-height:1.2;}
+.ep-season-sub{font-size:.74rem;color:var(--mute);line-height:1.4;margin-top:.22rem;}
+.ep-season-count{background:var(--surf);border:1.5px solid var(--bdr);border-radius:999px;padding:.25rem .65rem;font-size:.72rem;font-weight:800;color:var(--blue-dk);white-space:nowrap;}
+.ep-season-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(222px,1fr));gap:.7rem;}
 .ep{background:var(--surf);border:1.5px solid var(--bdr);border-radius:var(--r);
   padding:.82rem .92rem;transition:all .18s;}
 .ep:hover{border-color:var(--blue-md);box-shadow:var(--sh);}
@@ -2380,7 +2387,7 @@ function rEps(){
     <div class="ep-progress-bar" style="margin-top:.55rem;"><div class="ep-progress-fill" style="width:${pct}%"></div></div>
   </div>`;
 
-  const cards = EPS.map(ep=>{
+  const renderEpisodeCard = ep=>{
     const num=String(ep.n).padStart(4,'0');
     const url=`https://postdoctransformation.ac-page.com/creatingreorganized_show${num}`;
     const c=LV_COLS[ep.lvl-1],lt=LV_LTS[ep.lvl-1];
@@ -2411,6 +2418,30 @@ function rEps(){
         <div class="ep-voice-author">${isOwn ? '💛 Your insight' : '💬 Student voice'}</div>
       </div>` : ''}
     </div>`;
+  };
+
+  const seasons = [
+    {n:1,title:'Season 1',range:'Episodes 1-8',sub:'The Foundation Season: find your spark, shape trust, and test your first offer.',from:1,to:8},
+    {n:2,title:'Season 2',range:'Episodes 9-16',sub:'The Growth Season: protect your energy, measure ROI, and build repeatable systems.',from:9,to:16},
+    {n:3,title:'Season 3',range:'Episodes 17-24',sub:'The Legacy Season: scale visibility, community, income, and your future-proof ecosystem.',from:17,to:24}
+  ];
+
+  const cards = seasons.map(season=>{
+    const seasonEpisodes = EPS.filter(ep=>ep.n>=season.from && ep.n<=season.to);
+    const seasonListened = seasonEpisodes.filter(ep=>S.epListened && S.epListened[ep.n]).length;
+    return `<section class="ep-season" aria-labelledby="ep-season-${season.n}">
+      <div class="ep-season-head">
+        <div>
+          <div class="ep-season-kicker">${season.range}</div>
+          <div class="ep-season-title" id="ep-season-${season.n}">${season.title}</div>
+          <div class="ep-season-sub">${season.sub}</div>
+        </div>
+        <div class="ep-season-count">${seasonListened}/${seasonEpisodes.length} listened</div>
+      </div>
+      <div class="ep-season-grid">
+        ${seasonEpisodes.map(renderEpisodeCard).join('')}
+      </div>
+    </section>`;
   }).join('');
 
   // Student Voices section - only show episodes where students shared insights
